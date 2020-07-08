@@ -4,37 +4,54 @@ console.log('PetitComputer ver2.2');
 document.getElementById('editScreen').style.display = 'none';
 
 
-var runScreenController = (function() {
 
-    var canvas = document.getElementById('runScreen');
-    var ctx = canvas.getContext('2d');
-    canvas.height = 768;
-    canvas.width = 1024;
+var runScreen = (function() {
+
+    var findId = function(id) {
+        return document.getElementById(id);
+    }
+
+    var runConsole = findId('console');
+    var runBGF = findId('bgFront');
+    var runSprite = findId('sprite');
+    var runBGR = findId('bgR');
+    var runGraphic = findId('graphic');
+    var ctxCons, ctxBGF, ctxSprite, ctxBGR, ctxGraphic;
+
+    runConsole.height = 768;
+    runConsole.width = 1024;
+    ctxCons = runConsole.getContext('2d');
 
     console.log('runScreenController loaded');
 
+
     return {
-        screen: ctx,
-        placeText: function(text, x, y) {
-            ctx.font = '48pt petitcomputer';
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(x * 32, y * 32, text.length * 32, 32);
-            ctx.fillStyle = '#FFFFFF';
-            ctx.fillText(text, x * 32, (y + 1) * 32);
-        },
-        testing: function() {
-            runScreenController.placeText('PetitComputer ver2.2', 0, 0);
-            runScreenController.placeText('SMILEBASIC 1048576 bytes free', 0, 1);
-            runScreenController.placeText('(C)2011-2012 SmileBoom Co.Ltd.', 0, 2);
-            runScreenController.placeText('READY', 0, 4);
-            runScreenController.placeText('(not really this is a test)', 0, 6);
+
+        console: {
+
+            placeText: function(text, x, y) {
+                ctxCons.font = '48pt petitcomputer';
+                ctxCons.fillStyle = '#000000';
+                ctxCons.fillRect(x * 32, y * 32, text.length * 32, 32);
+                ctxCons.fillStyle = '#FFFFFF';
+                ctxCons.fillText(text, x * 32, (y + 1) * 32);
+            },
+            default: function() {
+                this.placeText('PetitComputer ver2.2', 0, 0);
+                this.placeText('SMILEBASIC 1048576 bytes free', 0, 1);
+                this.placeText('(C)2011-2012 SmileBoom Co.Ltd.', 0, 2);
+                this.placeText('READY', 0, 4);
+                this.placeText('(not really this is a test)', 0, 6);
+            }
+
         }
+
     };
 
 })();
 
 
-var pnlScreenController = (function() {
+var pnlScreen = (function() {
 
     var canvas = document.getElementById('pnlScreen');
     var ctx = canvas.getContext('2d');
@@ -46,4 +63,4 @@ var pnlScreenController = (function() {
 })();
 
 
-runScreenController.testing();
+runScreen.console.default();

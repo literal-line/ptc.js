@@ -25,7 +25,7 @@ body {
     zoom: 200%;
 }
 
-#runScreen {
+#runScreen, .runScreenCanvas {
     position: absolute;
     top: 0;
     height: 192px;
@@ -65,12 +65,4 @@ body {
     right: 10px;
     margin: 0;
     opacity: 0.5;
-}
-
-
-
-
-#test {
-    font-family: 'petitcomputer';
-    color: #FFFFFF;
 }

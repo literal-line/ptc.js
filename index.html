@@ -2,18 +2,25 @@
 <html>
     <head>
         <title>Petit Computer</title>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" type="text/css" href="style.css">
         <link rel="icon" type="image/x-icon" href="favicon.ico"/>
         <link rel="shortcut icon" type="image/x-icon" href="favicon.ico"/>
-        <link rel="stylesheet" type="text/css" href="style.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="author" content="Literal Line">
         <meta name="description" content="Petit Computer interpreter written in HTML5.">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta charset="UTF-8">
+        <!-- hopefully this will make the font load on the first run :) -->
+        <link rel="preload" href="./assets/font/PetitComputer.ttf" as="font" type="font/ttf" crossorigin="anonymous">
     </head>
-    <div id="test">Reload to get the font working</div>
     <body>
         <div id="ptc">
-            <canvas id="runScreen"></canvas>
+            <div id="runScreen">
+                <canvas id="console" class="runScreenCanvas"></canvas>
+                <canvas id="bgFront" class="runScreenCanvas"></canvas>
+                <canvas id="sprite" class="runScreenCanvas"></canvas>
+                <canvas id="bgRear" class="runScreenCanvas"></canvas>
+                <canvas id="graphic" class="runScreenCanvas"></canvas>
+            </div>
             <canvas id="editScreen"></canvas>
             <canvas id="pnlScreen"></canvas>
         </div>
