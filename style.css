@@ -1,0 +1,75 @@
+@font-face {
+    font-family: petitcomputer;
+    src: url('./assets/font/PetitComputer.ttf');
+}
+
+@font-face {
+    font-family: petitcomputeredit;
+    src: url('./assets/font/PetitComputerEdit.ttf');
+}
+
+body {
+    background-color: #000000;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    font-family: 'petitcomputer';
+}
+
+
+#ptc {
+    position: relative;
+    height: 384px;
+    width: 256px;
+    margin: auto;
+    border: 1px solid #888888;
+    zoom: 200%;
+}
+
+#runScreen {
+    position: absolute;
+    top: 0;
+    height: 192px;
+    width: 256px;
+    image-rendering: pixelated;
+}
+
+#editScreen {
+    position: absolute;
+    top: 0;
+    height: 192px;
+    width: 256px;
+}
+
+#pnlScreen {
+    position: absolute;
+    bottom: 0;
+    height: 192px;
+    width: 256px;
+    background-image: url('./assets/pnl/pnlPlaceholder.png');
+}
+
+
+
+#demo {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    margin: 0;
+    color: #FF0000;
+    font-size: 28px;
+}
+
+#github {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    margin: 0;
+    opacity: 0.5;
+}
+
+
+
+
+#test {
+    font-family: 'petitcomputer';
+}
