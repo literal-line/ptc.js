@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>All Commands</title>
+        <style>
+            @font-face {
+                font-family: 'ptc';
+                src: url('./assets/font/PetitComputer.ttf');
+            }
+
+            body {
+                background-color: #FCFCFC;
+                font-size: 14pt;
+            }
+
+            h1 {
+                padding-bottom: 10px;
+                border-bottom: 1px solid #000000;
+                text-align: center;
+                position: sticky;
+                top: 0;
+                index: 1;
+                background-color: #FCFCFC;
+            }
+
+            h2 {
+                padding-top: 20px;
+                border-bottom: 1px solid #000000;
+            }
+
+            h3 {
+                padding-top: 10px;
+                border-bottom: 1px solid #BBBBBB;
+            }
+
+            strong {
+                color: #FF0000;
+            }
+
+            .anchor::before {
+                display: block; 
+                content: " ";
+                margin-top: -65px; 
+                height: 65px; 
+                visibility: hidden; 
+            }
+
+            code {
+                padding-left: 5px;
+                padding-right: 5px;
+                background-image: url('./assets/codebg.png');
+                font-family: 'ptc';
+                color: #FFFFFF;
+                image-rendering: pixelated;
+                image-rendering: -moz-crisp-edges;
+                font-size: 16pt;
+            }
+
+            #back {
+                position: fixed;
+                top: 5px;
+                left: 5px;
+                z-index: 2;
+            }
+
+            #toc {
+                padding-left: 10px;
+                padding-right: 10px;
+                border: 1px solid #000000;
+                background-color: #FCFCFC;
+                position: fixed;
+                left: 10px;
+                index: 0;
+                height: 80%;
+                min-width: 250px;
+            }
+
+            #content {
+                margin-left: 300px;
+                text-align: left;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="back"><a href="./">&lt&lt Back to PTC.js</a></div>
+        <h1>PTC.js Command Directory</h1>
+        <div id="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#introduction">Introduction</a></li>
+                &nbsp
+                <li>
+                    <a href="#consolecommands">Console Commands</a>
+                    <ul>
+                        <li><a href="#cls">CLS</a></li>
+                        <li><a href="#locate">LOCATE</a></li>
+                        <li><a href="#color">COLOR</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#graphiccommands">Graphic commands</a>
+                    <ul>
+                        <li><a href="#gcls">GCLS</a></li>
+                        <li><a href="#gline">GLINE</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="anchor" id="content">
+            <div class="anchor" id="introduction">
+                <h2>Welcome to PTC.js!</h2>
+                <p>PTC.js is an in-development interpreter for the DSiWare app "Petit Computer." It is written in HTML5 for the web browser.</p>
+                Key Features of PTC.js:
+                <ul>
+                    <li>A 256 pixel by 384 pixel resolution, the DSi's native resolution.</li>
+                    <li>1:1 hand-drawn Petit Computer font (different from SmileBasic font).</li>
+                    <li>Your mother (I couldn't think of anything else).</li>
+                </ul>
+                &nbsp
+                <p>So far, there are very little commands, and they can only be inputted through the Javascript console. However, this project has only just started and is nowhere near completion.</p>
+            </div>
+
+            <div class="anchor" id="consolecommands">
+                <h2>Console Commands</h2>
+                <p>The console layer is the highest layer on the upper screen. It used to manipulate strings of text. The following commands can be used with the console:</p>
+
+                <div class="anchor" id="cls">
+                    <h3>CLS</h3>
+                    <p>Parameters: none</p>
+                    <p>JS format: <code>runMode.console.cls()</code></p>
+                    <p>PTC format: <code>CLS</code></p>
+                    &nbsp
+                    <p>Clears the console screen.</p>
+                </div>
+                <div class="anchor" id="locate">
+                    <h3>LOCATE</h3>
+                    <p>Parameters: x position, y position</p>
+                    <p>JS format: <code>runMode.console.locate(x, y)</code></p>
+                    <p>PTC format: <code>LOCATE x,y</code></p>
+                    &nbsp
+                    <p>Sets position of console character placement.</p>
+                </div>
+                <div class="anchor" id="color">
+                    <h3>COLOR</h3>
+                    <p>Parameters: palette number</p>
+                    <p>JS format: <code>runMode.console.color(palette number)</code></p>
+                    <p>PTC format: <code>COLOR palette number</code></p>
+                    &nbsp
+                    <p>Sets color of console character placement.</p>
+                </div>
+
+            </div>
+
+            <div class="anchor" id="graphiccomands">
+                <h2>Graphic Commands</h2>
+                <p>The graphic layer is the lowest layer on the upper screen. It is used to lines and shapes. The following commands can be used with the graphic layer.</p>
+                <p><strong>NOTE: </strong>graphic commands are supposed to have their own color palette, but this has not been implemented yet.</p>
+
+                <div class="anchor" id="gcls">
+                    <h3>GCLS</h3>
+                    <p>Parameters: none</p>
+                    <p>JS format: <code>runMode.graphic.gcls()</code></p>
+                    <p>PTC format: <code>GCLS</code></p>
+                    &nbsp
+                    <p>Clears the graphic screen.</p>
+                </div>
+                <div class="anchor" id="gline">
+                    <h3>GLINE</h3>
+                    <p>Parameters: x start, y start, x end, y end, palette number</p>
+                    <p>JS format: <code>runMode.graphic.gline(x1, y1, x2, y2, palette number)</code></p>
+                    <p>PTC format: <code>GLINE x1, y1, x2, y2, palette number</code></p>
+                    &nbsp
+                    <p>Draws a line on the graphic screen.</p>
+                </div>
+
+            </div>
+        </div>
+    </body>
+</html>
