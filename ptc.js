@@ -99,6 +99,7 @@ var runMode = (function() {
                 ctxCons.fillStyle = consoleColor;
                 ctxCons.fillText(text, x * 32, (y + 1) * 32);
 
+                consolePos.x = 0;
                 consolePos.y++;
             },
 
