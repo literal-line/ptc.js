@@ -7,4 +7,4 @@ The [menu mockup](https://literal-line.github.io/ptc.js/) and the interpreter ne
 
 Site: https://literal-line.github.io/ptc-interpreter-mockup
 
-Command directory : https://literal-line.github.io/ptc-interpreter-mockup/commands.html
+Command directory: https://literal-line.github.io/ptc-interpreter-mockup/commands.html
