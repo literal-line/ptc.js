@@ -2,7 +2,7 @@
     font-family: 'ptc';
     font-style: normal;
     font-weight: normal;
-    src: url('./assets/font/PetitComputer.woff') format('woff');
+    src: url('./assets/font/PetitComputer.ttf') format('truetype');
 }
 
 @font-face {

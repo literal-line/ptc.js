@@ -148,7 +148,7 @@ var runMode = (function() {
                 y = consolePos.y;
 
                 ctxCons.clearRect(x * 32, y * 32, text.length * 32, 32);
-                ctxCons.font = '48pt petitcomputer';
+                ctxCons.font = '48pt ptc';
                 ctxCons.fillStyle = consoleColor;
 
                 ctxCons.fillText(text, x * 32, (y + 1) * 32);
