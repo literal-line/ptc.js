@@ -29,8 +29,8 @@ var runMode = (function() {
         }
     }
 
-    var defaultChrTable = function() {
-        chrTable = [ // dimensions x: 0-31, y: 0-23
+    var defaultConsoleChrTable = function() {
+        consoleChrTable = [ // dimensions x: 0-31, y: 0-23
             '                                ', // 0
             '                                ', // 1
             '                                ', // 2
@@ -74,7 +74,7 @@ var runMode = (function() {
     ctxBGR = runBGR.getContext('2d');
     ctxGraphic = runGraphic.getContext('2d');
 
-    // set default variables
+    // set default console variables
     var consolePallete = [ // regular color pallete for console, bg, and sprites
         '#FFFFFF',
         '#000000',
@@ -93,13 +93,16 @@ var runMode = (function() {
         '#3F3F3F',
         '#EBEBEB'
     ];
+    //var consoleChrIDs; // for use later
+
+
     var consoleColor = consolePallete[0];
     var consolePos = {
         x: 0,
         y: 0
     };
-    var chrTable = [];
-    defaultChrTable();
+    var consoleChrTable = [];
+    defaultConsoleChrTable();
 
 
     console.log('runMode controller loaded');
@@ -115,7 +118,7 @@ var runMode = (function() {
             },
 
             cls: function() {
-                defaultChrTable();
+                defaultConsoleChrTable();
                 ctxCons.clearRect(0, 0, 1024, 768);
                 consolePos.x = 0;
                 consolePos.y = 0;
@@ -149,7 +152,7 @@ var runMode = (function() {
                 ctxCons.fillStyle = consoleColor;
 
                 ctxCons.fillText(text, x * 32, (y + 1) * 32);
-                chrTable[y] = chrTable[y].replaceAt(x, text);
+                consoleChrTable[y] = consoleChrTable[y].replaceAt(x, text);
 
                 consolePos.x = 0;
                 consolePos.y++;
@@ -174,11 +177,11 @@ var runMode = (function() {
             },
 
             chckChr: function(x, y) {
-                return chrTable[y].charAt(x);
+                return consoleChrTable[y].charAt(x);
             },
 
-            getChrTable: function() {
-                return chrTable;
+            getConsoleChrTable: function() {
+                return consoleChrTable;
             }
 
         },
