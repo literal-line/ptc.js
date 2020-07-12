@@ -1,15 +1,15 @@
 @font-face {
-    font-family: ptc;
+    font-family: 'ptc';
     font-style: normal;
     font-weight: normal;
-    src: url('./assets/font/PetitComputer.ttf');
+    src: url('./assets/font/PetitComputer.ttf') format('truetype');
 }
 
 @font-face {
-    font-family: ptcedit;
+    font-family: 'ptcedit';
     font-style: normal;
     font-weight: normal;
-    src: url('./assets/font/PetitComputerEdit.ttf');
+    src: url('./assets/font/PetitComputerEdit.ttf') format('truetype');
 }
 
 body {
