@@ -2,6 +2,11 @@
 document.getElementById('editScreen').style.display = 'none';
 
 
+// custom function to replace string character at index
+String.prototype.replaceAt = function(index, replacement) {
+    return this.substr(0, index) + replacement + this.substr(index + replacement.length);
+}
+
 
 var runMode = (function() {
 
@@ -66,6 +71,32 @@ var runMode = (function() {
         y: 0
     };
 
+    var chckChrTable = [ // dimensions x: 0-31, y: 0-23
+        '                                ', // 0
+        '                                ', // 1
+        '                                ', // 2
+        '                                ', // 3
+        '                                ', // 4
+        '                                ', // 5
+        '                                ', // 6
+        '                                ', // 7
+        '                                ', // 8
+        '                                ', // 9
+        '                                ', // 10
+        '                                ', // 11
+        '                                ', // 12
+        '                                ', // 13
+        '                                ', // 14
+        '                                ', // 15
+        '                                ', // 16
+        '                                ', // 17
+        '                                ', // 18
+        '                                ', // 19
+        '                                ', // 20
+        '                                ', // 21
+        '                                ', // 22
+        '                                '  // 23
+    ];
 
     console.log('runMode controller loaded');
 
@@ -74,6 +105,11 @@ var runMode = (function() {
 
         console: {
 
+            acls: function() {
+                this.cls();
+                // more stuff
+            },
+
             cls: function() {
                 ctxCons.clearRect(0, 0, 1024, 768);
                 consolePos.x = 0;
@@ -81,15 +117,24 @@ var runMode = (function() {
             },
 
             locate: function(x, y) {
-                consolePos.x = x;
-                consolePos.y = y;
+                if (x >= 0 && x <= 31) {
+                    consolePos.x = x;
+                } else {
+                    consolePos.x = 0;
+                }
+
+                if (y >= 0 && y <= 23) {
+                    consolePos.y = y;
+                } else {
+                    consolePos.y = 0;
+                }
             },
 
             color: function(color) {
                 consoleColor = consolePallete[color];
             },
 
-            print: function(text) { // print text on console layer with at x,y and color from palette
+            print: function(text) { // print text on console layer
                 var x, y;
                 x = consolePos.x;
                 y = consolePos.y;
@@ -97,7 +142,9 @@ var runMode = (function() {
                 ctxCons.clearRect(x * 32, y * 32, text.length * 32, 32);
                 ctxCons.font = '48pt petitcomputer';
                 ctxCons.fillStyle = consoleColor;
+
                 ctxCons.fillText(text, x * 32, (y + 1) * 32);
+                chckChrTable[y] = chckChrTable[y].replaceAt(x, text);
 
                 consolePos.x = 0;
                 consolePos.y++;
@@ -119,19 +166,23 @@ var runMode = (function() {
                 this.locate(11,8);
                 this.color(13);
                 this.print('console.');
+            },
+
+            chckChr: function(x, y) {
+                return chckChrTable[y].charAt(x);
+            },
+
+            getChrTable: function() {
+                return chckChrTable;
             }
 
         },
 
-        bgFront: {
+        bg: {
             //
         },
 
         sprite: { // sprite will stay in between BGF and BGR for now...
-            //
-        },
-
-        bgRear: {
             //
         },
 
@@ -153,18 +204,6 @@ var runMode = (function() {
         }
 
     };
-
-})();
-
-
-var pnlScreen = (function() { // does nothing yet
-
-    var canvas = document.getElementById('pnlScreen');
-    var ctx = canvas.getContext('2d');
-    canvas.height = 768;
-    canvas.width = 1024;
-
-    console.log('pnlScreen controller loaded');
 
 })();
 

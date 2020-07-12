@@ -9,7 +9,7 @@
             }
 
             body {
-                background-color: #FFFFDF;
+                background-color: #FFFFFD;
                 font-size: 14pt;
             }
 
@@ -20,7 +20,7 @@
                 position: sticky;
                 top: 0;
                 index: 1;
-                background-color: #FFFFDF;
+                background-color: #FFFFFD;
             }
 
             h2 {
@@ -67,7 +67,7 @@
                 padding-left: 10px;
                 padding-right: 10px;
                 border: 1px solid #000000;
-                background-color: #FFFFDF;
+                background-color: #FFFFFD;
                 position: fixed;
                 left: 10px;
                 index: 0;
@@ -88,7 +88,9 @@
             <h2>Table of Contents</h2>
             <ul>
                 <li><a href="#introduction">Introduction</a></li>
-                &nbsp
+                &nbsp;
+                <li><a href="#newcommands">Newly Added Commands</a></li>
+                &nbsp;
                 <li>
                     <a href="#consolecommands">Console Commands</a>
                     <ul>
@@ -106,30 +108,58 @@
                 </li>
             </ul>
         </div>
-        <div class="anchor" id="content">
+        <div id="content">
             <div class="anchor" id="introduction">
                 <h2>Welcome to the handy dandy PTC.js command directory!</h2>
-                <p>PTC.js is an in-development interpreter for the DSiWare app "Petit Computer." It is written in HTML5 for the web browser.</p>
+                <p>PTC.js is an in-development port/interpreter/remake/JS-reimagining thing for the DSiWare app "Petit Computer." It is written in HTML5 for the web browser.</p>
                 Key Features of PTC.js:
                 <ul>
                     <li>A 256 pixel by 384 pixel resolution, the DSi's native resolution.</li>
                     <li>1:1 hand-drawn Petit Computer font (different from SmileBasic font).</li>
                     <li>Your mother (I couldn't think of anything else).</li>
                 </ul>
-                &nbsp
+                &nbsp;
                 <p>So far, there are very little commands, and they can only be inputted through the Javascript console. However, this project has only just started and is nowhere near completion.</p>
+            </div>
+
+            <div class="anchor" id="newcommands">
+                <h2>Newly Added Commands/Functions:</h2>
+
+                <h3>July 9, 2020</h3>
+                <ul>
+                    <li>CLS</li>
+                    <li>LOCATE</li>
+                    <li>COLOR</li>
+                    <li>GCLS</li>
+                    <li>GLINE</li>
+                    <li><i>default()</i><strong>*</strong></li>
+                </ul>
+
+                <h3>July 11, 2020</h3>
+                <ul>
+                    <li>CHCKCHR (as well as a new system for keeping track of console characters)</li>
+                    <li><i>getChrTable()</i><strong>*</strong></li>
+                </ul>
+                &nbsp;
+                <p><strong><i>*behind-the-scenes JS function. Use only for debugging.</i></strong></p>
             </div>
 
             <div class="anchor" id="consolecommands">
                 <h2>Console Commands</h2>
-                <p>The console layer is the highest layer on the upper screen. It used to manipulate strings of text. The following commands can be used with the console:</p>
-
+                <p>The console layer is the highest layer on the upper screen. It used to manipulate strings of text.</p>
+                Console character range:
+                <ul>
+                    <li>X: 0-23</li>
+                    <li>Y: 0-31</li>
+                </ul>
+                <p>The following commands can be used with the console:</p>
+                
                 <div class="anchor" id="cls">
                     <h3>CLS</h3>
                     <p>Parameters: none</p>
                     <p>JS format: <code>runMode.console.cls()</code></p>
                     <p>PTC format: <code>CLS</code></p>
-                    &nbsp
+                    &nbsp;
                     <p>Clears the console screen.</p>
                 </div>
                 <div class="anchor" id="locate">
@@ -137,7 +167,7 @@
                     <p>Parameters: x position, y position</p>
                     <p>JS format: <code>runMode.console.locate(x, y)</code></p>
                     <p>PTC format: <code>LOCATE x,y</code></p>
-                    &nbsp
+                    &nbsp;
                     <p>Sets position of console character placement.</p>
                 </div>
                 <div class="anchor" id="color">
@@ -145,23 +175,31 @@
                     <p>Parameters: palette number</p>
                     <p>JS format: <code>runMode.console.color(palette number)</code></p>
                     <p>PTC format: <code>COLOR palette number</code></p>
-                    &nbsp
+                    &nbsp;
                     <p>Sets color of console character placement.</p>
+                </div>
+                <div class="anchor" id="chckchr">
+                    <h3>CHCKCHR()</h3>
+                    <p>Parameters: x position, y position</p>
+                    <p>JS format: <code>runMode.console.chckChr(x, y)</code></p>
+                    <p>PTC format: <code>CHCKCHR(x,y)</code></p>
+                    &nbsp;
+                    <p>Returns character string at the specified console position.</p>
                 </div>
 
             </div>
 
             <div class="anchor" id="graphiccomands">
                 <h2>Graphic Commands</h2>
-                <p>The graphic layer is the lowest layer on the upper screen. It is used to lines and shapes. The following commands can be used with the graphic layer.</p>
-                <p><strong>NOTE: </strong>graphic commands are supposed to have their own color palette, but this has not been implemented yet.</p>
+                <p>The graphic layer is the layer furthest-back on the upper screen. It is used to draw lines and shapes. The following commands can be used with the graphic layer.</p>
+                <p><strong>NOTE: </strong>Graphic commands are supposed to have their own color palette, but this has not been implemented yet.</p>
 
                 <div class="anchor" id="gcls">
                     <h3>GCLS</h3>
                     <p>Parameters: none</p>
                     <p>JS format: <code>runMode.graphic.gcls()</code></p>
                     <p>PTC format: <code>GCLS</code></p>
-                    &nbsp
+                    &nbsp;
                     <p>Clears the graphic screen.</p>
                 </div>
                 <div class="anchor" id="gline">
@@ -169,7 +207,7 @@
                     <p>Parameters: x start, y start, x end, y end, palette number</p>
                     <p>JS format: <code>runMode.graphic.gline(x1, y1, x2, y2, palette number)</code></p>
                     <p>PTC format: <code>GLINE x1, y1, x2, y2, palette number</code></p>
-                    &nbsp
+                    &nbsp;
                     <p>Draws a line on the graphic screen.</p>
                 </div>
 
