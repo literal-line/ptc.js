@@ -29,6 +29,34 @@ var runMode = (function() {
         }
     }
 
+    var defaultChrTable = function() {
+        chrTable = [ // dimensions x: 0-31, y: 0-23
+            '                                ', // 0
+            '                                ', // 1
+            '                                ', // 2
+            '                                ', // 3
+            '                                ', // 4
+            '                                ', // 5
+            '                                ', // 6
+            '                                ', // 7
+            '                                ', // 8
+            '                                ', // 9
+            '                                ', // 10
+            '                                ', // 11
+            '                                ', // 12
+            '                                ', // 13
+            '                                ', // 14
+            '                                ', // 15
+            '                                ', // 16
+            '                                ', // 17
+            '                                ', // 18
+            '                                ', // 19
+            '                                ', // 20
+            '                                ', // 21
+            '                                ', // 22
+            '                                '  // 23
+        ];
+    }
 
     // define variables for canvases and set default resolutions
     var runConsole = findId('console');
@@ -70,33 +98,9 @@ var runMode = (function() {
         x: 0,
         y: 0
     };
+    var chrTable = [];
+    defaultChrTable();
 
-    var chckChrTable = [ // dimensions x: 0-31, y: 0-23
-        '                                ', // 0
-        '                                ', // 1
-        '                                ', // 2
-        '                                ', // 3
-        '                                ', // 4
-        '                                ', // 5
-        '                                ', // 6
-        '                                ', // 7
-        '                                ', // 8
-        '                                ', // 9
-        '                                ', // 10
-        '                                ', // 11
-        '                                ', // 12
-        '                                ', // 13
-        '                                ', // 14
-        '                                ', // 15
-        '                                ', // 16
-        '                                ', // 17
-        '                                ', // 18
-        '                                ', // 19
-        '                                ', // 20
-        '                                ', // 21
-        '                                ', // 22
-        '                                '  // 23
-    ];
 
     console.log('runMode controller loaded');
 
@@ -111,6 +115,7 @@ var runMode = (function() {
             },
 
             cls: function() {
+                defaultChrTable();
                 ctxCons.clearRect(0, 0, 1024, 768);
                 consolePos.x = 0;
                 consolePos.y = 0;
@@ -144,7 +149,7 @@ var runMode = (function() {
                 ctxCons.fillStyle = consoleColor;
 
                 ctxCons.fillText(text, x * 32, (y + 1) * 32);
-                chckChrTable[y] = chckChrTable[y].replaceAt(x, text);
+                chrTable[y] = chrTable[y].replaceAt(x, text);
 
                 consolePos.x = 0;
                 consolePos.y++;
@@ -169,11 +174,11 @@ var runMode = (function() {
             },
 
             chckChr: function(x, y) {
-                return chckChrTable[y].charAt(x);
+                return chrTable[y].charAt(x);
             },
 
             getChrTable: function() {
-                return chckChrTable;
+                return chrTable;
             }
 
         },
