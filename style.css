@@ -1,10 +1,14 @@
 @font-face {
     font-family: ptc;
+    font-style: normal;
+    font-weight: normal;
     src: url('./assets/font/PetitComputer.ttf');
 }
 
 @font-face {
     font-family: ptcedit;
+    font-style: normal;
+    font-weight: normal;
     src: url('./assets/font/PetitComputerEdit.ttf');
 }
 
