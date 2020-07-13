@@ -93,7 +93,24 @@ var runMode = (function() {
         '#3F3F3F',
         '#EBEBEB'
     ];
-    //var consoleChrIDs; // for use later
+    var consoleChrIDs = [ // 16x16 list of all console characters in order (most are unused unicode)
+        ' ','','','','','','','','','','','','','','','',
+        '','','','','','','','','','','','','','','','',
+        ' ','!','"','#','$','%','&','\'','(',')','*','+',',','-','.','/',
+        '0','1','2','3','4','5','6','7','8','9',':',';','<','=','>','?',
+        '@','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O',
+        'P','Q','R','S','T','U','V','W','X','Y','Z','[','¥',']','^','_',
+        '`','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o',
+        'p','q','r','s','t','u','v','w','x','y','z','{','|','}','~','\\',
+        '','','','','','','','','','','','','','','','',
+        '','','','','','','','','','','','','','','','',
+        '~','。','「','」','、','・','ヲ','ァ','ィ','ゥ','ェ','ォ','ャ','ュ','ョ','ッ',
+        'ー','ア','イ','ウ','エ','オ','カ','キ','ク','ケ','コ','サ','シ','ス','セ','ソ',
+        'タ','チ','ツ','テ','ト','ナ','ニ','ヌ','ネ','ノ','ハ','ヒ','フ','ヘ','ホ','マ',
+        'ミ','ム','メ','モ','ヤ','ユ','ヨ','ラ','リ','ル','レ','ロ','ワ','ン','゛','゜',
+        '','','','','','','','','','','','','','','','',
+        '','','','','','','','','','','','','','','',''
+    ];
 
 
     var consoleColor = consolePallete[0];
@@ -108,7 +125,7 @@ var runMode = (function() {
     console.log('runMode controller loaded');
 
 
-    return { // all commands that can be used in run mode, categorized by their layer
+    return { // all methods that can be used in run mode, categorized by their type
 
         console: {
 
@@ -125,15 +142,11 @@ var runMode = (function() {
             },
 
             locate: function(x, y) {
-                if (x >= 0 && x <= 31) {
+                if ((x >= 0 && x <= 31) || (y >= 0 && y <= 23)) {
                     consolePos.x = x;
-                } else {
-                    consolePos.x = 0;
-                }
-
-                if (y >= 0 && y <= 23) {
                     consolePos.y = y;
                 } else {
+                    consolePos.x = 0;
                     consolePos.y = 0;
                 }
             },
@@ -144,18 +157,82 @@ var runMode = (function() {
 
             print: function(text) { // print text on console layer
                 var x, y;
+                // consolePos shorthand
                 x = consolePos.x;
                 y = consolePos.y;
 
-                ctxCons.clearRect(x * 32, y * 32, text.length * 32, 32);
                 ctxCons.font = '48pt ptc';
                 ctxCons.fillStyle = consoleColor;
 
-                ctxCons.fillText(text, x * 32, (y + 1) * 32);
-                consoleChrTable[y] = consoleChrTable[y].replaceAt(x, text);
+                // if console y position is too large
+                if (y > 22) {
+                    // shift CHKCHR() table up
+                    consoleChrTable.shift();
+                    consoleChrTable.push('                                ');
+                    // shift canvas up
+                    var canvasData = ctxCons.getImageData(0, 0, 1024, 768);
+                    ctxCons.putImageData(canvasData, 0, -32);
+                    // clear last line
+                    ctxCons.clearRect(0, 736, 1024, 32);
+                    // move console y position back up and update y shorthand
+                    consolePos.y = 22;
+                    y = consolePos.y;
+                }
 
+                // clear space for text, draw text, and add text to CHKCHR() table
+                for (i = 0; i < String(text).length; i++) {
+
+                    var currentChr = String(text).charAt(i);
+
+                    if (x > 31) {
+                        x = 0;
+                        y++;
+                    }
+
+
+                    ctxCons.clearRect(x * 32, y * 32, 32, 32);
+                    ctxCons.fillText(currentChr, x * 32, (y + 1) * 32);
+                    consoleChrTable[y] = consoleChrTable[y].replaceAt(x, currentChr);
+
+                    x++;
+                }
+
+
+                // next line
                 consolePos.x = 0;
-                consolePos.y++;
+                consolePos.y = y + 1;
+            },
+
+            chkChr: function(x, y) {
+                var selectedChr = consoleChrTable[y].charAt(x);
+                return consoleChrIDs.indexOf(selectedChr);
+            },
+
+            getConsoleChrTable: function() {
+                return consoleChrTable;
+            },
+
+            getConsoleChrIDs: function() {
+                return consoleChrIDs;
+            },
+
+            printConsoleChrIDs: function() {
+                this.print(' ');
+                this.print('');
+                this.print(' !"#$%&\'()*+,-./');
+                this.print('0123456789:;<=>?');
+                this.print('@ABCDEFGHIJKLMNO');
+                this.print('PQRSTUVWXYZ[¥]^_');
+                this.print('`abcdefghijklmno');
+                this.print('pqrstuvwxyz{|}~/');
+                this.print('');
+                this.print('');
+                this.print('~。「」、・ヲァィゥェォャュョッ');
+                this.print('ーアイウエオカキクケコサシスセソ');
+                this.print('タチツテトナニヌネノハヒフヘホマ');
+                this.print('ミムメモヤユヨラリルレロワン゛゜');
+                this.print('');
+                this.print('');
             },
 
             default: function() { // default text on start
@@ -165,23 +242,15 @@ var runMode = (function() {
                 this.print('(C)2011-2012 SmileBoom Co.Ltd.');
                 this.print('');
                 this.print('READY');
-                this.print('');
                 this.color(13);
                 this.print('At the moment, commands can');
                 this.print('only be inputted using the');
                 this.color(3);
                 this.print('Javascript');
-                this.locate(11,8);
+                this.locate(11,7);
                 this.color(13);
                 this.print('console.');
-            },
-
-            chckChr: function(x, y) {
-                return consoleChrTable[y].charAt(x);
-            },
-
-            getConsoleChrTable: function() {
-                return consoleChrTable;
+                this.color(0);
             }
 
         },

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>All Commands</title>
+        <title>Command Directory</title>
         <style>
             @font-face {
                 font-family: 'ptc';
@@ -90,6 +90,7 @@
                 <li><a href="#introduction">Introduction</a></li>
                 &nbsp;
                 <li><a href="#newcommands">Newly Added Commands</a></li>
+                <li><a href="#todo">To-Do List</a></li>
                 &nbsp;
                 <li>
                     <a href="#consolecommands">Console Commands</a>
@@ -97,6 +98,7 @@
                         <li><a href="#cls">CLS</a></li>
                         <li><a href="#locate">LOCATE</a></li>
                         <li><a href="#color">COLOR</a></li>
+                        <li><a href="#chkchr">CHKCHR()</a></li>
                     </ul>
                 </li>
                 <li>
@@ -122,8 +124,26 @@
                 <p>So far, there are very little commands, and they can only be inputted through the Javascript console. However, this project has only just started and is nowhere near completion.</p>
             </div>
 
+            <div class="anchor" id="todo">
+                <h2>To-Do List</h2>
+                <ul>
+                    <li>Make blank console spaces and actual spaces separate text characters.</li>
+                </ul>
+            </div>
             <div class="anchor" id="newcommands">
                 <h2>Newly Added Commands/Functions:</h2>
+
+                <h3>July 13, 2020</h3>
+                <ul>
+                    <li><i>getConsoleChrIDs()</i><strong>*</strong></li>
+                    <li><i>printConsoleChrIDs()</i><strong>*</strong></li>
+                </ul>
+
+                <h3>July 11, 2020</h3>
+                <ul>
+                    <li>CHKCHR (as well as a new system for keeping track of console characters)</li>
+                    <li><i>getConsoleChrTable()</i><strong>*</strong></li>
+                </ul>
 
                 <h3>July 9, 2020</h3>
                 <ul>
@@ -135,18 +155,13 @@
                     <li><i>default()</i><strong>*</strong></li>
                 </ul>
 
-                <h3>July 11, 2020</h3>
-                <ul>
-                    <li>CHCKCHR (as well as a new system for keeping track of console characters)</li>
-                    <li><i>getConsoleChrTable()</i><strong>*</strong></li>
-                </ul>
                 &nbsp;
                 <p><strong><i>*behind-the-scenes JS function. Use only for debugging.</i></strong></p>
             </div>
 
             <div class="anchor" id="consolecommands">
                 <h2>Console Commands</h2>
-                <p>The console layer is the highest layer on the upper screen. It used to manipulate strings of text.</p>
+                <p>The console layer is the highest layer on the upper screen. It used to draw strings of text.</p>
                 Console character range:
                 <ul>
                     <li>X: 0-23</li>
@@ -178,14 +193,14 @@
                     &nbsp;
                     <p>Sets color of console character placement.</p>
                 </div>
-                <div class="anchor" id="chckchr">
-                    <h3>CHCKCHR()</h3>
+                <div class="anchor" id="chkchr">
+                    <h3>CHKCHR()</h3>
                     <p>Parameters: x position, y position</p>
-                    <p>JS format: <code>runMode.console.chckChr(x, y)</code></p>
-                    <p>PTC format: <code>CHCKCHR(x,y)</code></p>
+                    <p>JS format: <code>runMode.console.chkChr(x, y)</code></p>
+                    <p>PTC format: <code>CHKCHR(x,y)</code></p>
                     &nbsp;
                     <p>Returns character string at the specified console position.</p>
-                    <p><strong>NOTE: </strong>At the moment, CHCKCHR() returns the text character in the form of a string, instead of the character's ID.</p>
+                    <p><strong>NOTE: </strong>At the moment, CHKCHR() cannot distinguish spaces from empty characters.</p>
                 </div>
 
             </div>
