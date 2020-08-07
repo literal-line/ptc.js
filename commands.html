@@ -93,7 +93,7 @@
             <ul>
                 <li><a href="#introduction">Introduction</a></li>
                 &nbsp;
-                <li><a href="#newcommands">Newly Added Commands</a></li>
+                <li><a href="#updates">Updates</a></li>
                 <li><a href="#todo">To-Do List</a></li>
                 &nbsp;
                 <li>
@@ -103,14 +103,22 @@
                         <li><a href="#print">PRINT</a></li>
                         <li><a href="#locate">LOCATE</a></li>
                         <li><a href="#color">COLOR</a></li>
+                        <li><a href="#asc">ASC()</a></li>
+                        <li><a href="#chr$">CHR$()</a></li>
                         <li><a href="#chkchr">CHKCHR()</a></li>
                     </ul>
                 </li>
                 <li>
-                    <a href="#graphiccommands">Graphic commands</a>
+                    <a href="#graphiccommands">Graphic Commands</a>
                     <ul>
                         <li><a href="#gcls">GCLS</a></li>
                         <li><a href="#gline">GLINE</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#audiocommands">Audio Commands</a>
+                    <ul>
+                        <li><a href="#beep">BEEP</a></li>
                     </ul>
                 </li>
             </ul>
@@ -122,11 +130,11 @@
                 Key Features of PTC.js:
                 <ul>
                     <li>A 256 pixel by 384 pixel resolution, the DSi's native resolution.</li>
-                    <li>1:1 hand-drawn Petit Computer font (different from SmileBasic font).</li>
+                    <li>JavaScript integration with PTC commands.</li>
                     <li>Your mother (I couldn't think of anything else).</li>
                 </ul>
                 &nbsp;
-                <p>So far, there are very little commands, and they can only be inputted through the Javascript console. However, this project has only just started and is nowhere near completion.</p>
+                <p>So far, there are very little commands, and they can only be inputted through the Javascript console. However, this project has only just started and is nowhere near completion. Expect more features soon.</p>
             </div>
 
             <div class="anchor" id="todo">
@@ -135,22 +143,41 @@
                     <li>Make blank console spaces and actual spaces separate text characters.</li>
                 </ul>
             </div>
-            <div class="anchor" id="newcommands">
-                <h2>Newly Added Commands/Functions:</h2>
+            <div class="anchor" id="updates">
+                <h2>Updates:</h2>
+
+                <h3>August 06, 2020</h3>
+                <p>Added the following commands:</p>
+                <ul>
+                    <li>ASC()</li>
+                    <li>CHR$()</li>
+                    <li>BEEP</li>
+                </ul>
+                <p>Renamed the following commands:</p>
+                <ul>
+                    <li><i>default()</i> to <i>welcome()</i>.</li>
+                    <li><i>getConsoleChrIDs()</i> to <i>getChrIDs()</i>.</li>
+                    <li><i>printConsoleChrIDs()</i> to <i>printChrIDs()</i>.</li>
+                    <li><i>getConsoleChrTable()</i> to <i>getChrTable()</i>.</li>
+                </ul>
+                <p>Cleaned up the console's code.</p>
 
                 <h3>July 13, 2020</h3>
+                <p>Added the following commands:</p>
                 <ul>
-                    <li><i>getConsoleChrIDs()</i><strong>*</strong></li>
-                    <li><i>printConsoleChrIDs()</i><strong>*</strong></li>
+                    <li><i>getChrIDs()</i><strong>*</strong></li>
+                    <li><i>printChrIDs()</i><strong>*</strong></li>
                 </ul>
 
                 <h3>July 11, 2020</h3>
+                <p>Added the following commands:</p>
                 <ul>
-                    <li>CHKCHR (as well as a new system for keeping track of console characters)</li>
-                    <li><i>getConsoleChrTable()</i><strong>*</strong></li>
+                    <li>CHKCHR() (as well as a new system for keeping track of console characters)</li>
+                    <li><i>getChrTable()</i><strong>*</strong></li>
                 </ul>
 
                 <h3>July 9, 2020</h3>
+                <p>Added the following commands:</p>
                 <ul>
                     <li>CLS</li>
                     <li>PRINT</li>
@@ -160,14 +187,13 @@
                     <li>GLINE</li>
                     <li><i>default()</i><strong>*</strong></li>
                 </ul>
-
                 &nbsp;
                 <p><strong><i>*behind-the-scenes JS function. Use only for debugging.</i></strong></p>
             </div>
 
             <div class="anchor" id="consolecommands">
                 <h2>Console Commands</h2>
-                <p>The console layer is the highest layer on the upper screen. It used to draw strings of text.</p>
+                <p>The console layer is the highest layer on the upper screen. It used to print strings of text.</p>
                 Console character range:
                 <ul>
                     <li>X: 0-23</li>
@@ -207,13 +233,29 @@
                     &nbsp;
                     <p>Sets color of console character placement.</p>
                 </div>
+                <div class="anchor" id="asc">
+                    <h3>ASC()</h3>
+                    <p>Parameters: text</p>
+                    <p>JS format: <code>runMode.console.asc(chr)</code></p>
+                    <p>PTC format: <code>ASC(chr)</code></p>
+                    &nbsp;
+                    <p>Returns an ASCII ID for the first character of the text string.</p>
+                </div>
+                <div class="anchor" id="chr$">
+                    <h3>CHR$()</h3>
+                    <p>Parameters: ASCII ID</p>
+                    <p>JS format: <code>runMode.console.chr$(id)</code></p>
+                    <p>PTC format: <code>CHR$(id)</code></p>
+                    &nbsp;
+                    <p>Returns a text character for the specified ASCII ID.</p>
+                </div>
                 <div class="anchor" id="chkchr">
                     <h3>CHKCHR()</h3>
                     <p>Parameters: x position, y position</p>
                     <p>JS format: <code>runMode.console.chkChr(x, y)</code></p>
                     <p>PTC format: <code>CHKCHR(x,y)</code></p>
                     &nbsp;
-                    <p>Returns character string at the specified console position.</p>
+                    <p>Returns ASCII ID of the text character at the specified console position.</p>
                     <p><strong>NOTE: </strong>At the moment, CHKCHR() cannot distinguish spaces from empty characters.</p>
                 </div>
 
@@ -241,6 +283,20 @@
                     <p>Draws a line on the graphic screen.</p>
                 </div>
 
+            </div>
+
+            <div class="anchor" id="audiocommands">
+                <h2>Audio Commands</h2>
+                <p>The following commands play audio:</p>
+
+                <div class="anchor" id="beep">
+                    <h3>BEEP</h3>
+                    <p>Parameters: none <strong>OR</strong> 0-69</p>
+                    <p>JS format: <code>runMode.audio.beep()</code></p>
+                    <p>PTC format: <code>BEEP</code></p>
+                    &nbsp;
+                    <p>Plays the specified sound effect.</p>
+                </div>
             </div>
         </div>
     </body>
