@@ -28,8 +28,8 @@ var runMode = (function() {
     var defaultRes = function() {
         var list, index;
 
-        graphicCanvas.height = 192;
-        graphicCanvas.width = 256;
+        graphicCanvas.setAttribute('height', 192);
+        graphicCanvas.setAttribute('width', 256);
 
         list = document.getElementsByClassName('runModeCanvas');
         for (index = 0; index < list.length - 1; index++) {
@@ -364,8 +364,8 @@ var cursor = (function() {
     // set canvas, canvas context, and dimensions
     var cursorCanvas = findId('cursor');
     var cursorCtx = cursorCanvas.getContext('2d');
-    cursorCanvas.height = 768;
-    cursorCanvas.width = 1024;
+    cursorCanvas.setAttribute('height', 192);
+    cursorCanvas.setAttribute('width', 256);
     cursorCtx.fillStyle = '#FFFFFF';
 
 
