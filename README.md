@@ -1,4 +1,4 @@
-In-development interpreter for Petit Computer written in HTML5.
+In-development interpreter/port thingy for Petit Computer written in HTML5.
 
 Site: https://literal-line.github.io/ptc-interpreter-mockup
 
