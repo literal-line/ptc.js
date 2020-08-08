@@ -76,7 +76,9 @@
                 left: 10px;
                 z-index: 0;
                 height: 80%;
-                min-width: 250px;
+                width: 260px;
+                overflow: scroll;
+                scrollbar-width: none;
             }
 
             #content {
@@ -92,6 +94,8 @@
             <h2>Table of Contents</h2>
             <ul>
                 <li><a href="#introduction">Introduction</a></li>
+                &nbsp;
+                <li><a href="#cmdrules">Rules for Inputting Commands</a></li>
                 &nbsp;
                 <li><a href="#updates">Updates</a></li>
                 <li><a href="#todo">To-Do List</a></li>
@@ -137,14 +141,31 @@
                 <p>So far, there are very little commands, and they can only be inputted through the Javascript console. However, this project has only just started and is nowhere near completion. Expect more features soon.</p>
             </div>
 
+            <div class="anchor" id="cmdrules">
+                <h2>Rules for Inputting Commands:</h2>
+                <p>So far, there are two ways to input commands. Both use JavaScript syntax:</p>
+                <ul>
+                    <li>Typing the commands directly into the PTC console.</li>
+                    <li>Typing the commands into the browser's dev console.</li>
+                </ul>
+                <p>When inputting commands using the dev console, make sure to prefix the command with <code>runMode.</code>.</p>
+                <p><strong>There is currently no way to input commands using the PTC format.</strong></p>
+            </div>
+
             <div class="anchor" id="todo">
                 <h2>To-Do List</h2>
                 <ul>
+                    <li>PTC syntax interpreter.</li>
+                    <li>Edit mode.</li>
+                    <li>On-screen keyboard functionality.</li>
                     <li>Make blank console spaces and actual spaces separate text characters.</li>
                 </ul>
             </div>
             <div class="anchor" id="updates">
                 <h2>Updates:</h2>
+
+                <h3>August 7, 2020<sup>+</sup></h3>
+                <p>Added the ability to input commands through the PTC console (JS syntax only).</p>
 
                 <h3>August 6, 2020</h3>
                 <p>Added the following commands:</p>
@@ -189,6 +210,7 @@
                 </ul>
                 &nbsp;
                 <p><strong><i>*behind-the-scenes JS function. Use only for debugging.</i></strong></p>
+                <p><i><sup>+</sup><strong> very big update.</i></strong></p>
             </div>
 
             <div class="anchor" id="consolecommands">
@@ -204,7 +226,7 @@
                 <div class="anchor" id="cls">
                     <h3>CLS</h3>
                     <p>Parameters: none</p>
-                    <p>JS format: <code>runMode.console.cls()</code></p>
+                    <p>JS format: <code>console.cls()</code></p>
                     <p>PTC format: <code>CLS</code></p>
                     &nbsp;
                     <p>Clears the console screen.</p>
@@ -212,7 +234,7 @@
                 <div class="anchor" id="print">
                     <h3>PRINT</h3>
                     <p>Parameters: text</p>
-                    <p>JS format: <code>runMode.console.print(text)</code></p>
+                    <p>JS format: <code>console.print(text)</code></p>
                     <p>PTC format: <code>PRINT "text"</code></p>
                     &nbsp;
                     <p>Prints text to the console screen.</p>
@@ -220,7 +242,7 @@
                 <div class="anchor" id="locate">
                     <h3>LOCATE</h3>
                     <p>Parameters: x position, y position</p>
-                    <p>JS format: <code>runMode.console.locate(x, y)</code></p>
+                    <p>JS format: <code>console.locate(x, y)</code></p>
                     <p>PTC format: <code>LOCATE x,y</code></p>
                     &nbsp;
                     <p>Sets position of console character placement.</p>
@@ -228,7 +250,7 @@
                 <div class="anchor" id="color">
                     <h3>COLOR</h3>
                     <p>Parameters: palette number</p>
-                    <p>JS format: <code>runMode.console.color(palette number)</code></p>
+                    <p>JS format: <code>console.color(palette number)</code></p>
                     <p>PTC format: <code>COLOR palette number</code></p>
                     &nbsp;
                     <p>Sets color of console character placement.</p>
@@ -236,7 +258,7 @@
                 <div class="anchor" id="asc">
                     <h3>ASC()</h3>
                     <p>Parameters: text</p>
-                    <p>JS format: <code>runMode.console.asc(chr)</code></p>
+                    <p>JS format: <code>console.asc(chr)</code></p>
                     <p>PTC format: <code>ASC(chr)</code></p>
                     &nbsp;
                     <p>Returns an ASCII ID for the first character of the text string.</p>
@@ -244,7 +266,7 @@
                 <div class="anchor" id="chr$">
                     <h3>CHR$()</h3>
                     <p>Parameters: ASCII ID</p>
-                    <p>JS format: <code>runMode.console.chr$(id)</code></p>
+                    <p>JS format: <code>console.chr$(id)</code></p>
                     <p>PTC format: <code>CHR$(id)</code></p>
                     &nbsp;
                     <p>Returns a text character for the specified ASCII ID.</p>
@@ -252,7 +274,7 @@
                 <div class="anchor" id="chkchr">
                     <h3>CHKCHR()</h3>
                     <p>Parameters: x position, y position</p>
-                    <p>JS format: <code>runMode.console.chkChr(x, y)</code></p>
+                    <p>JS format: <code>console.chkChr(x, y)</code></p>
                     <p>PTC format: <code>CHKCHR(x,y)</code></p>
                     &nbsp;
                     <p>Returns ASCII ID of the text character at the specified console position.</p>
@@ -269,7 +291,7 @@
                 <div class="anchor" id="gcls">
                     <h3>GCLS</h3>
                     <p>Parameters: none</p>
-                    <p>JS format: <code>runMode.graphic.gcls()</code></p>
+                    <p>JS format: <code>graphic.gcls()</code></p>
                     <p>PTC format: <code>GCLS</code></p>
                     &nbsp;
                     <p>Clears the graphic screen.</p>
@@ -277,7 +299,7 @@
                 <div class="anchor" id="gline">
                     <h3>GLINE</h3>
                     <p>Parameters: x start, y start, x end, y end, palette number</p>
-                    <p>JS format: <code>runMode.graphic.gline(x1, y1, x2, y2, palette number)</code></p>
+                    <p>JS format: <code>graphic.gline(x1, y1, x2, y2, palette number)</code></p>
                     <p>PTC format: <code>GLINE x1, y1, x2, y2, palette number</code></p>
                     &nbsp;
                     <p>Draws a line on the graphic screen.</p>
@@ -292,7 +314,7 @@
                 <div class="anchor" id="beep">
                     <h3>BEEP</h3>
                     <p>Parameters: none <strong>OR</strong> 0-69</p>
-                    <p>JS format: <code>runMode.audio.beep()</code></p>
+                    <p>JS format: <code>audio.beep()</code></p>
                     <p>PTC format: <code>BEEP</code></p>
                     &nbsp;
                     <p>Plays the specified sound effect.</p>

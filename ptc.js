@@ -1,27 +1,35 @@
 // ptc.js """"""interpreter""""""" by Literal Line
 document.getElementById('editScreen').style.display = 'none';
 
+// custom function to insert string at index
+String.prototype.insertAt = function(index, insert) {
+    return this.slice(0, index) + insert + this.slice(index, this.length);
+};
+
+// custom function to delete string character at index
+String.prototype.deleteAt = function(index) {
+    return this.slice(0, index) + this.slice(index + 1, this.length);
+};
 
 // custom function to replace string character at index
 String.prototype.replaceAt = function(index, replacement) {
-    return this.substr(0, index) + replacement + this.substr(index + replacement.length);
+    return this.slice(0, index) + replacement + this.slice(index + replacement.length);
 };
 
+// jQuery is for lazy losers haha
+function findId(id) {
+    return document.getElementById(id);
+}
 
 
 var runMode = (function() {
-
-    // getElementById but shorter (this is bad??)
-    var findId = function(id) {
-        return document.getElementById(id);
-    };
 
     // set default canvas resolutions, all being 1024x768 except graphic canvas
     var defaultRes = function() {
         var list, index;
 
-        runGraphic.height = 192;
-        runGraphic.width = 256;
+        graphicCanvas.height = 192;
+        graphicCanvas.width = 256;
 
         list = document.getElementsByClassName('runModeCanvas');
         for (index = 0; index < list.length - 1; index++) {
@@ -31,20 +39,19 @@ var runMode = (function() {
     };
 
     // define variables for canvases and set default resolutions
-    var runConsole = findId('console');
-    var runBGF = findId('bgFront');
-    var runSprite = findId('sprite');
-    var runBGR = findId('bgRear');
-    var runGraphic = findId('graphic');
+    var consoleCanvas = findId('console');
+    var BGFCanvas = findId('bgFront');
+    var spriteCanvas = findId('sprite');
+    var BGRCanvas = findId('bgRear');
+    var graphicCanvas = findId('graphic');
     defaultRes();
 
-    // set canvas contexts (this looks bad but oh well)
-    var ctxCons, ctxBGF, ctxSprite, ctxBGR, ctxGraphic;
-    ctxCons = runConsole.getContext('2d');
-    ctxBGF = runBGF.getContext('2d');
-    ctxSprite = runSprite.getContext('2d');
-    ctxBGR = runBGR.getContext('2d');
-    ctxGraphic = runGraphic.getContext('2d');
+    // set canvas contexts
+    var consCtx = consoleCanvas.getContext('2d');
+    var BGFCtx = BGFCanvas.getContext('2d');
+    var spriteCtx = spriteCanvas.getContext('2d');
+    var BGRCtx = BGRCanvas.getContext('2d');
+    var graphicCtx = graphicCanvas.getContext('2d');
 
     // object for all console data
     var consoleData = {
@@ -152,17 +159,16 @@ var runMode = (function() {
         consoleData.chrTable.shift();
         consoleData.chrTable.push('                                ');
         // shift canvas up
-        var canvasData = ctxCons.getImageData(0, 0, 1024, 768);
-        ctxCons.putImageData(canvasData, 0, -32);
+        var canvasData = consCtx.getImageData(0, 0, 1024, 768);
+        consCtx.putImageData(canvasData, 0, -32);
         // clear last line
-        ctxCons.clearRect(0, 736, 1024, 32);
+        consCtx.clearRect(0, 736, 1024, 32);
     };
 
     // directory for sounds used with BEEP function
     var beepDir = './assets/audio/beep/';
 
-
-    console.log('runMode controller loaded');
+    console.log('[PTC.js] runMode controller loaded');
 
 
     return { // all methods that can be used in run mode, categorized by their type
@@ -176,7 +182,7 @@ var runMode = (function() {
 
             cls: function() {
                 consoleData.chrTableDefault();
-                ctxCons.clearRect(0, 0, 1024, 768);
+                consCtx.clearRect(0, 0, 1024, 768);
                 consoleData.pos.x = 0;
                 consoleData.pos.y = 0;
             },
@@ -204,8 +210,8 @@ var runMode = (function() {
                 x = consoleData.pos.x;
                 y = consoleData.pos.y;
 
-                ctxCons.font = '48pt ptc';
-                ctxCons.fillStyle = consoleData.currentColor;
+                consCtx.font = '48pt ptc';
+                consCtx.fillStyle = consoleData.currentColor;
 
 
 
@@ -217,18 +223,18 @@ var runMode = (function() {
                     if (x > 31) {
                         x = 0;
                         y++;
-                        // if console y position is too large
-                        if (y > 22) {
-                            consoleData.newLine();
-                            // move console y position back up and update y shorthand
-                            consoleData.pos.y = 22;
-                            y = consoleData.pos.y;
-                        }
                     }
 
+                    // if console y position is too large
+                    if (y > 22) {
+                        consoleData.newLine();
+                        // move console y position back up and update y shorthand
+                        consoleData.pos.y = 22;
+                        y = consoleData.pos.y;
+                    }
 
-                    ctxCons.clearRect(x * 32, y * 32, 32, 32);
-                    ctxCons.fillText(currentChr, x * 32, (y + 1) * 32);
+                    consCtx.clearRect(x * 32, y * 32, 32, 32);
+                    consCtx.fillText(currentChr, x * 32, (y + 1) * 32);
                     consoleData.chrTable[y] = consoleData.chrTable[y].replaceAt(x, currentChr);
 
                     x++;
@@ -264,6 +270,10 @@ var runMode = (function() {
                 return consoleData.chrIDs;
             },
 
+            getDataObject: function() {
+                return consoleData;
+            },
+
             printChrIDs: function() {
                 this.print(' ');
                 this.print('');
@@ -285,6 +295,7 @@ var runMode = (function() {
 
             welcome: function() { // default text on start
                 this.cls();
+                this.color(0);
                 this.print('PetitComputer ver2.2');
                 this.print('SMILEBASIC 1048576 bytes free');
                 this.print('(C)2011-2012 SmileBoom Co.Ltd.');
@@ -294,11 +305,13 @@ var runMode = (function() {
                 this.color(13);
                 this.print('At the moment, commands can');
                 this.print('only be inputted using the');
+                this.print('cursed');
                 this.color(3);
+                this.locate(7, 8);
                 this.print('Javascript');
-                this.locate(11,8);
+                this.locate(18, 8);
                 this.color(13);
-                this.print('console.');
+                this.print('format.');
                 this.color(0);
             }
 
@@ -315,16 +328,16 @@ var runMode = (function() {
         graphic: {
 
             gcls: function() {
-                ctxGraphic.clearRect(0, 0, 256, 192);
+                graphicCtx.clearRect(0, 0, 256, 192);
             },
             
             gline: function(x1, y1, x2, y2, color) {
-                ctxGraphic.strokeStyle = consoleData.pallete[color];
-                ctxGraphic.lineWidth = 1;
-                ctxGraphic.beginPath();
-                ctxGraphic.moveTo(x1, y1);
-                ctxGraphic.lineTo(x2, y2);
-                ctxGraphic.stroke();
+                graphicCtx.strokeStyle = consoleData.pallete[color];
+                graphicCtx.lineWidth = 1;
+                graphicCtx.beginPath();
+                graphicCtx.moveTo(x1, y1);
+                graphicCtx.lineTo(x2, y2);
+                graphicCtx.stroke();
             }
 
         },
@@ -333,7 +346,7 @@ var runMode = (function() {
 
             beep: function(id) {
                 id = (typeof (id) !== 'undefined') ? id : 0;
-                var sound = new Audio(beepDir + 'BEEP' + id + '.mp3')                                   ;
+                var sound = new Audio(beepDir + 'BEEP' + id + '.mp3');
                 console.log(sound);
                 sound.play();
             }
@@ -341,6 +354,106 @@ var runMode = (function() {
         }
 
     };
+
+})();
+
+
+
+var cursor = (function() {
+
+    // set canvas, canvas context, and dimensions
+    var cursorCanvas = findId('cursor');
+    var cursorCtx = cursorCanvas.getContext('2d');
+    cursorCanvas.height = 768;
+    cursorCanvas.width = 1024;
+    cursorCtx.fillStyle = '#FFFFFF';
+
+
+    // blinking cursor function (called every 500ms)
+    var visible = 1;
+    var updateCursor = function() {
+        var x, y;
+        cursorPos = cursorPos >= 31 ? 31 : cursorPos;
+        x = cursorPos * 32;
+        y = (runMode.console.getDataObject().pos.y + 1) * 32 - 4;
+
+        cursorCtx.clearRect(0, 0, 1024, 768);
+        if (visible === 1) {
+            cursorCtx.fillRect(x, y, 28, -8);
+        }
+
+        visible = -(visible);
+    };
+    setInterval(updateCursor, 500);
+
+    // detect typing
+    var string = '                                ';
+    var cursorPos = 0;
+    document.addEventListener('keypress', function(e) {
+        var x, y;
+        x = runMode.console.getDataObject().pos.x;
+        y = runMode.console.getDataObject().pos.y;
+
+        if (e.key !== 'Enter') {
+            if (cursorPos <= 31) {
+                string = string.insertAt(cursorPos, e.key);
+                string = string.slice(0, -1);
+                cursorPos++;
+             
+                runMode.console.print(string);
+                runMode.console.locate(0, y);
+            }
+        } else {
+            runMode.console.print();
+            eval('runMode.' + string);
+
+            string = '                                ';
+            cursorPos = 0;
+            runMode.console.print('OK');
+        }
+
+        runMode.audio.beep(9);
+        visible = 1;
+        updateCursor();
+    });
+
+    // detect arrow keys, backspace, space, and tab
+    document.addEventListener('keydown', function(e) {
+        var y, beepKeys;
+        y = runMode.console.getDataObject().pos.y;
+        beepKeys = ['Backspace', 'ArrowLeft', 'ArrowRight'];
+
+        // backspace and arrow keys
+        if (cursorPos < 31 && e.code === 'ArrowRight') {
+            cursorPos++;
+        } else if (cursorPos > 0) {
+            if (e.code === 'ArrowLeft') {
+                cursorPos--;
+            } else if (e.code === 'Backspace') {
+                string = string.deleteAt(cursorPos - 1);
+                string = string + ' ';
+                cursorPos--;
+                runMode.console.print(string);
+                runMode.console.locate(0, y);
+            }
+        }
+
+        // prevent scrolling page with space
+        if (e.code === 'Space' || e.code === 'Tab') {
+            e.preventDefault();
+        }
+
+        for (var i = 0; i <= beepKeys.length; i++) {
+            if (e.code === beepKeys[i]) {
+                runMode.audio.beep(9);
+            }
+        }
+        
+        visible = 1;
+        updateCursor();
+    });
+
+    console.log('[PTC.js] cursor controller loaded');
 
 })();
 

@@ -36,12 +36,16 @@ a {
 
 
 
-#runMode, .runModeCanvas {
+#runMode, .runModeCanvas, .cursorCanvas {
     position: absolute;
     top: 0;
     height: 192px;
     width: 256px;
     image-rendering: pixelated;
+}
+
+#cursor {
+    z-index: 1;
 }
 
 #console {
