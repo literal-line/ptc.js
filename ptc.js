@@ -364,8 +364,8 @@ var cursor = (function() {
     // set canvas, canvas context, and dimensions
     var cursorCanvas = findId('cursor');
     var cursorCtx = cursorCanvas.getContext('2d');
-    cursorCanvas.setAttribute('height', 192);
-    cursorCanvas.setAttribute('width', 256);
+    cursorCanvas.setAttribute('height', 768);
+    cursorCanvas.setAttribute('width', 1024);
     cursorCtx.fillStyle = '#FFFFFF';
 
 
