@@ -32,6 +32,7 @@ a {
     margin: auto;
     border: 1px solid #888888;
     zoom: 200%;
+    touch-action: manipulation;
 }
 
 
