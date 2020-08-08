@@ -168,6 +168,7 @@ var runMode = (function() {
     // directory for sounds used with BEEP function
     var beepDir = './assets/audio/beep/';
 
+
     console.log('[PTC.js] runMode controller loaded');
 
 
@@ -228,6 +229,7 @@ var runMode = (function() {
                     // if console y position is too large
                     if (y > 22) {
                         consoleData.newLine();
+                        
                         // move console y position back up and update y shorthand
                         consoleData.pos.y = 22;
                         y = consoleData.pos.y;
@@ -260,6 +262,12 @@ var runMode = (function() {
             chkChr: function(x, y) {
                 var selectedChr = consoleData.chrTable[y].charAt(x);
                 return consoleData.chrIDs.indexOf(selectedChr);
+            },
+
+            // dev stuff
+            clearLine: function(y) {
+                consCtx.clearRect(0, y * 32, 1024, 32);
+                consoleData.chrTable[y] = '                                ';
             },
 
             getChrTable: function() {
@@ -347,7 +355,6 @@ var runMode = (function() {
             beep: function(id) {
                 id = (typeof (id) !== 'undefined') ? id : 0;
                 var sound = new Audio(beepDir + 'BEEP' + id + '.mp3');
-                console.log(sound);
                 sound.play();
             }
 
@@ -359,109 +366,141 @@ var runMode = (function() {
 
 
 
-var cursor = (function() {
+var inputMode = (function() {
 
-    // set canvas, canvas context, and dimensions
-    var cursorCanvas = findId('cursor');
-    var cursorCtx = cursorCanvas.getContext('2d');
-    cursorCanvas.setAttribute('height', 768);
-    cursorCanvas.setAttribute('width', 1024);
-    cursorCtx.fillStyle = '#FFFFFF';
+    // set default canvas resolutions, all being 1024x768
+    var defaultRes = function() {
+        var list, index;
+
+        list = document.getElementsByClassName('inputCanvas');
+        for (index = 0; index < list.length; index++) {
+            list[index].setAttribute('height', 768);
+            list[index].setAttribute('width', 1024);
+        }
+    };
+
+    // define variables for canvases and set default resolution
+    var cursor = findId('inputCursor');
+    var text = findId('inputText');
+    defaultRes();
+
+    // set canvas contexts
+    var cursorCtx = cursor.getContext('2d');
+    var textCtx = text.getContext('2d');
+
+    var inputData = {
+        cursorPos: {
+            x: 0,
+            y: 0
+        },
+        textInput: '                                ',
+        textColor: 0
+    };
+    inputData.update = function() {
+        var consoleData = runMode.console.getDataObject()
+        inputData.cursorPos.y = consoleData.pos.y;
+        inputData.textColor = consoleData.currentColor;
+    };
 
 
-    // blinking cursor function (called every 500ms)
+    // text input / blinking cursor function (called every 500ms / on text input)
     var visible = 1;
-    var updateCursor = function() {
-        var x, y;
-        cursorPos = cursorPos >= 31 ? 31 : cursorPos;
-        x = cursorPos * 32;
-        y = (runMode.console.getDataObject().pos.y + 1) * 32 - 4;
+    var updateInput = function() {
+        var x, y, text, color;
+        inputData.update();
+        x = inputData.cursorPos.x * 32;
+        y = (inputData.cursorPos.y + 1) * 32;
+        text = inputData.textInput;
+        color = inputData.textColor;
 
         cursorCtx.clearRect(0, 0, 1024, 768);
+        textCtx.clearRect(0, 0, 1024, 768);
+
+        // draw cursor to cursor canvas if visible variable === 1
+        cursorCtx.fillStyle = '#FFFFFF';
         if (visible === 1) {
-            cursorCtx.fillRect(x, y, 28, -8);
+            cursorCtx.fillRect(x, y - 4, 28, -8);
         }
-
         visible = -(visible);
+
+        // draw text to text canvas
+        textCtx.fillStyle = color;
+        textCtx.font = '48pt ptc';
+        textCtx.fillText(text, 0, y);
+
     };
-    setInterval(updateCursor, 500);
-
-    // detect arrow keys, backspace, and tab
-    document.addEventListener('keydown', function(e) {
-        var y, beepKeys;
-        y = runMode.console.getDataObject().pos.y;
-        beepKeys = ['Backspace'];
-
-        // backspace and arrow keys
-        if (cursorPos < 31 && e.code === 'ArrowRight') {
-            cursorPos++;
-        } else if (cursorPos > 0) {
-            if (e.code === 'ArrowLeft') {
-                cursorPos--;
-            } else if (e.code === 'Backspace') {
-                string = string.deleteAt(cursorPos - 1);
-                string = string + ' ';
-                cursorPos--;
-                runMode.console.print(string);
-                runMode.console.locate(0, y);
-            }
-        }
-
-        // prevent scrolling page with space
-        if (e.code === 'Tab') {
-            e.preventDefault();
-        }
-
-        for (var i = 0; i <= beepKeys.length; i++) {
-            if (e.code === beepKeys[i]) {
-                runMode.audio.beep(9);
-            }
-        }
-        
-        visible = 1;
-        updateCursor();
-    });
+    setInterval(updateInput, 500);
 
     // detect typing
-    var string = '                                ';
-    var cursorPos = 0;
     document.addEventListener('keypress', function(e) {
-        var x, y;
-        x = runMode.console.getDataObject().pos.x;
-        y = runMode.console.getDataObject().pos.y;
+        var key = e.key;
 
-        if (e.key !== 'Enter') {
-            if (cursorPos <= 31) {
-                e.preventDefault();
-                string = string.insertAt(cursorPos, e.key);
-                string = string.slice(0, -1);
-                cursorPos++;
-             
-                runMode.console.print(string);
-                runMode.console.locate(0, y);
+        if (key !== 'Enter') {
+            e.preventDefault();
+
+            inputData.textInput = inputData.textInput.insertAt(inputData.cursorPos.x, key);
+            inputData.textInput = inputData.textInput.slice(0, -1);
+
+            if (inputData.cursorPos.x < 31) {
+                inputData.cursorPos.x++;
             }
-        } else {
-            runMode.console.print();
+
+            runMode.audio.beep(9);
+            visible = 1;
+            updateInput();
+        }
+    });
+
+    // detect special keys
+    document.addEventListener('keydown', function(e) {
+        var key = e.key;
+        
+        if (key === 'Enter') {
+            var input = inputData.textInput;
 
             try {
-                eval('runMode.' + string);
-                runMode.console.print('OK');
+                runMode.console.print(input);
+                eval(input);
+                if (input !== '                                ') {
+                    runMode.console.print('OK');
+                    runMode.console.clearLine(runMode.console.getDataObject().pos.y);
+                    //runMode.console.locate(0, runMode.console.getDataObject().pos.y - 1);
+                }
+                runMode.audio.beep(9);
             } catch(err) {
                 runMode.console.print(err.message);
                 runMode.audio.beep(2);
             }
 
-            string = '                                ';
-            cursorPos = 0;
+            inputData.textInput = '                                ';
+            inputData.cursorPos.x = 0;
+        }
+        
+        if (key === 'Backspace') {
+            if (inputData.cursorPos.x > 0) {
+                inputData.textInput = inputData.textInput.deleteAt(inputData.cursorPos.x - 1) + ' ';
+                inputData.cursorPos.x--;
+            }
+            runMode.audio.beep(9);
+        } else if (key === 'ArrowLeft' && inputData.cursorPos.x > 0) {
+            inputData.cursorPos.x--;
+        } else if (key === 'ArrowRight' && inputData.cursorPos.x < 31) {
+            inputData.cursorPos.x++;
         }
 
-        runMode.audio.beep(9);
         visible = 1;
-        updateCursor();
-    });
+        updateInput();
+    })
 
 
-    console.log('[PTC.js] cursor controller loaded');
+    console.log('[PTC.js] inputMode controller loaded');
+
+
+    return {
+        getDataObject: function() {
+            return inputData;
+        }
+    }
 
 })();
 
