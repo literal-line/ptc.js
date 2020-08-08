@@ -386,42 +386,11 @@ var cursor = (function() {
     };
     setInterval(updateCursor, 500);
 
-    // detect typing
-    var string = '                                ';
-    var cursorPos = 0;
-    document.addEventListener('keypress', function(e) {
-        var x, y;
-        x = runMode.console.getDataObject().pos.x;
-        y = runMode.console.getDataObject().pos.y;
-
-        if (e.key !== 'Enter') {
-            if (cursorPos <= 31) {
-                string = string.insertAt(cursorPos, e.key);
-                string = string.slice(0, -1);
-                cursorPos++;
-             
-                runMode.console.print(string);
-                runMode.console.locate(0, y);
-            }
-        } else {
-            runMode.console.print();
-            eval('runMode.' + string);
-
-            string = '                                ';
-            cursorPos = 0;
-            runMode.console.print('OK');
-        }
-
-        runMode.audio.beep(9);
-        visible = 1;
-        updateCursor();
-    });
-
-    // detect arrow keys, backspace, space, and tab
+    // detect arrow keys, backspace, and tab
     document.addEventListener('keydown', function(e) {
         var y, beepKeys;
         y = runMode.console.getDataObject().pos.y;
-        beepKeys = ['Backspace', 'ArrowLeft', 'ArrowRight'];
+        beepKeys = ['Backspace'];
 
         // backspace and arrow keys
         if (cursorPos < 31 && e.code === 'ArrowRight') {
@@ -439,7 +408,7 @@ var cursor = (function() {
         }
 
         // prevent scrolling page with space
-        if (e.code === 'Space' || e.code === 'Tab') {
+        if (e.code === 'Tab') {
             e.preventDefault();
         }
 
@@ -452,6 +421,45 @@ var cursor = (function() {
         visible = 1;
         updateCursor();
     });
+
+    // detect typing
+    var string = '                                ';
+    var cursorPos = 0;
+    document.addEventListener('keypress', function(e) {
+        var x, y;
+        x = runMode.console.getDataObject().pos.x;
+        y = runMode.console.getDataObject().pos.y;
+
+        if (e.key !== 'Enter') {
+            if (cursorPos <= 31) {
+                e.preventDefault();
+                string = string.insertAt(cursorPos, e.key);
+                string = string.slice(0, -1);
+                cursorPos++;
+             
+                runMode.console.print(string);
+                runMode.console.locate(0, y);
+            }
+        } else {
+            runMode.console.print();
+
+            try {
+                eval('runMode.' + string);
+                runMode.console.print('OK');
+            } catch(err) {
+                runMode.console.print(err.message);
+                runMode.audio.beep(2);
+            }
+
+            string = '                                ';
+            cursorPos = 0;
+        }
+
+        runMode.audio.beep(9);
+        visible = 1;
+        updateCursor();
+    });
+
 
     console.log('[PTC.js] cursor controller loaded');
 
