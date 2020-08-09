@@ -355,6 +355,7 @@ var runMode = (function() {
             beep: function(id) {
                 id = (typeof (id) !== 'undefined') ? id : 0;
                 var sound = new Audio(beepDir + 'BEEP' + id + '.mp3');
+                sound.volume = 0.5;
                 sound.play();
             }
 
