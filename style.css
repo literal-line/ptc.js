@@ -93,6 +93,30 @@ a {
     background-image: url('./assets/pnl/pnl.png');
 }
 
+.pnlKey, .pnlKeyFixed {
+    position: absolute;
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+    padding: 0;
+    height: 21px;
+    width: 13px;
+    border: none;
+    outline: none;
+    background: transparent;
+}
+
+.pnlKey:hover, .pnlKeyFixed:hover {
+    transform: translate(1px, 1px);
+    outline: none;
+}
+
+.pnlKey:active, .pnlKeyFixed:active {
+    transform: translate(0px, 0px);
+    outline: none;
+}
 
 
 #demo {

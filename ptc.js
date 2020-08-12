@@ -60,32 +60,60 @@ var runMode = (function() {
             y: 0
         },
 
-        chrTable: [ // dimensions x: 0-31, y: 0-23
-            '                                ', // 0
-            '                                ', // 1
-            '                                ', // 2
-            '                                ', // 3
-            '                                ', // 4
-            '                                ', // 5
-            '                                ', // 6
-            '                                ', // 7
-            '                                ', // 8
-            '                                ', // 9
-            '                                ', // 10
-            '                                ', // 11
-            '                                ', // 12
-            '                                ', // 13
-            '                                ', // 14
-            '                                ', // 15
-            '                                ', // 16
-            '                                ', // 17
-            '                                ', // 18
-            '                                ', // 19
-            '                                ', // 20
-            '                                ', // 21
-            '                                ', // 22
-            '                                '  // 23
-        ],
+        chrTable: {
+            text: [ // dimensions x: 0-31, y: 0-23
+                '                                ', // 0
+                '                                ', // 1
+                '                                ', // 2
+                '                                ', // 3
+                '                                ', // 4
+                '                                ', // 5
+                '                                ', // 6
+                '                                ', // 7
+                '                                ', // 8
+                '                                ', // 9
+                '                                ', // 10
+                '                                ', // 11
+                '                                ', // 12
+                '                                ', // 13
+                '                                ', // 14
+                '                                ', // 15
+                '                                ', // 16
+                '                                ', // 17
+                '                                ', // 18
+                '                                ', // 19
+                '                                ', // 20
+                '                                ', // 21
+                '                                ', // 22
+                '                                '  // 23
+            ],
+            color: [ // dimensions x: 0-31, y: 0-23
+                '00000000000000000000000000000000', // 0
+                '00000000000000000000000000000000', // 1
+                '00000000000000000000000000000000', // 2
+                '00000000000000000000000000000000', // 3
+                '00000000000000000000000000000000', // 4
+                '00000000000000000000000000000000', // 5
+                '00000000000000000000000000000000', // 6
+                '00000000000000000000000000000000', // 7
+                '00000000000000000000000000000000', // 8
+                '00000000000000000000000000000000', // 9
+                '00000000000000000000000000000000', // 10
+                '00000000000000000000000000000000', // 11
+                '00000000000000000000000000000000', // 12
+                '00000000000000000000000000000000', // 13
+                '00000000000000000000000000000000', // 14
+                '00000000000000000000000000000000', // 15
+                '00000000000000000000000000000000', // 16
+                '00000000000000000000000000000000', // 17
+                '00000000000000000000000000000000', // 18
+                '00000000000000000000000000000000', // 19
+                '00000000000000000000000000000000', // 20
+                '00000000000000000000000000000000', // 21
+                '00000000000000000000000000000000', // 22
+                '00000000000000000000000000000000'  // 23
+            ]
+        },
 
         pallete: [ // default color pallete for console, bg, and sprites
             '#FFFFFF',
@@ -127,7 +155,7 @@ var runMode = (function() {
     };
     consoleData.currentColor = consoleData.pallete[0];
     consoleData.chrTableDefault = function() {
-        this.chrTable = [
+        this.chrTable.text = [
             '                                ', // 0
             '                                ', // 1
             '                                ', // 2
@@ -156,14 +184,19 @@ var runMode = (function() {
     };
     consoleData.newLine = function() {
         // shift CHKCHR() table up
-        consoleData.chrTable.shift();
-        consoleData.chrTable.push('                                ');
+        consoleData.chrTable.text.shift();
+        consoleData.chrTable.color.shift();
+        consoleData.chrTable.text.push('                                ');
+        consoleData.chrTable.color.push('00000000000000000000000000000000');
         // shift canvas up
         var canvasData = consCtx.getImageData(0, 0, 1024, 768);
         consCtx.putImageData(canvasData, 0, -32);
         // clear last line
         consCtx.clearRect(0, 736, 1024, 32);
     };
+
+    // create AudioContext for sound
+    var audioContext = new AudioContext();
 
     // directory for sounds used with BEEP function
     var beepDir = './assets/audio/beep/';
@@ -237,7 +270,8 @@ var runMode = (function() {
 
                     consCtx.clearRect(x * 32, y * 32, 32, 32);
                     consCtx.fillText(currentChr, x * 32, (y + 1) * 32);
-                    consoleData.chrTable[y] = consoleData.chrTable[y].replaceAt(x, currentChr);
+                    consoleData.chrTable.text[y] = consoleData.chrTable.text[y].replaceAt(x, currentChr);
+                    consoleData.chrTable.color[y] = consoleData.chrTable.color[y].replaceAt(x, consoleData.pallete.indexOf(consoleData.currentColor).toString(16));
 
                     x++;
                 }
@@ -260,27 +294,17 @@ var runMode = (function() {
             },
 
             chkChr: function(x, y) {
-                var selectedChr = consoleData.chrTable[y].charAt(x);
+                var selectedChr = consoleData.chrTable.text[y].charAt(x);
                 return consoleData.chrIDs.indexOf(selectedChr);
             },
 
             // dev stuff
             clearLine: function(y) {
                 consCtx.clearRect(0, y * 32, 1024, 32);
-                consoleData.chrTable[y] = '                                ';
+                consoleData.chrTable.text[y] = '                                ';
             },
 
-            getChrTable: function() {
-                return consoleData.chrTable;
-            },
-
-            getChrIDs: function() {
-                return consoleData.chrIDs;
-            },
-
-            getDataObject: function() {
-                return consoleData;
-            },
+            getDataObject: consoleData,
 
             printChrIDs: function() {
                 this.print(' ');
@@ -352,11 +376,16 @@ var runMode = (function() {
 
         audio: {
 
-            beep: function(id) {
-                id = (typeof (id) !== 'undefined') ? id : 0;
-                var sound = new Audio(beepDir + 'BEEP' + id + '.mp3');
-                sound.volume = 0.5;
-                sound.play();
+            beep: function(id, vol) {
+                id = id || 0;
+                vol = (typeof vol === 'undefined') ? 0.5 : vol / 127 * 0.5;
+
+                if (vol >= 0 && vol <= 0.5) {
+                    var sound = new Audio(beepDir + 'BEEP' + id + '.mp3');
+    
+                    sound.volume = vol;
+                    sound.play();
+                }
             }
 
         }
@@ -394,13 +423,18 @@ var inputMode = (function() {
             x: 0,
             y: 0
         },
-        textInput: '                                ',
-        textColor: 0
+        textInput: {
+            string: '                                ',
+            color: '00000000000000000000000000000000'
+        },
+        history: [], // later...
+        historyCurrent : 0,
+        currentColor: 0
     };
     inputData.update = function() {
-        var consoleData = runMode.console.getDataObject()
+        var consoleData = runMode.console.getDataObject;
         inputData.cursorPos.y = consoleData.pos.y;
-        inputData.textColor = consoleData.currentColor;
+        inputData.currentColor = consoleData.currentColor;
     };
 
 
@@ -411,8 +445,8 @@ var inputMode = (function() {
         inputData.update();
         x = inputData.cursorPos.x * 32;
         y = (inputData.cursorPos.y + 1) * 32;
-        text = inputData.textInput;
-        color = inputData.textColor;
+        text = inputData.textInput.string;
+        color = inputData.currentColor;
 
         cursorCtx.clearRect(0, 0, 1024, 768);
         textCtx.clearRect(0, 0, 1024, 768);
@@ -425,10 +459,12 @@ var inputMode = (function() {
         visible = -(visible);
 
         // draw text to text canvas
-        textCtx.fillStyle = color;
         textCtx.font = '48pt ptc';
-        textCtx.fillText(text, 0, y);
-
+        var consoleData = runMode.console.getDataObject;
+        for (var i = 0; i <= 31; i++) {
+            textCtx.fillStyle = consoleData.pallete[parseInt(inputData.textInput.color.charAt(i), 16)];
+            textCtx.fillText(text[i], i * 32, y);
+        }
     };
     setInterval(updateInput, 500);
 
@@ -439,14 +475,15 @@ var inputMode = (function() {
         if (key !== 'Enter') {
             e.preventDefault();
 
-            inputData.textInput = inputData.textInput.insertAt(inputData.cursorPos.x, key);
-            inputData.textInput = inputData.textInput.slice(0, -1);
+            inputData.textInput.string = inputData.textInput.string.insertAt(inputData.cursorPos.x, key);
+            inputData.textInput.color = inputData.textInput.color.insertAt(inputData.cursorPos.x, runMode.console.getDataObject.pallete.indexOf(inputData.currentColor));
+            inputData.textInput.string = inputData.textInput.string.slice(0, -1);
+            inputData.textInput.color = inputData.textInput.color.slice(0, -1);
 
             if (inputData.cursorPos.x < 31) {
                 inputData.cursorPos.x++;
             }
 
-            runMode.audio.beep(9);
             visible = 1;
             updateInput();
         }
@@ -457,55 +494,316 @@ var inputMode = (function() {
         var key = e.key;
         
         if (key === 'Enter') {
-            var input = inputData.textInput;
+            var input, consoleY;
+            input = inputData.textInput.string;
+
+            inputData.history.push(input);
 
             try {
                 runMode.console.print(input);
-                eval(input);
-                if (input !== '                                ') {
+                var result = eval(input);
+                //eval(input);
+                if (input !== '                                ') { // print "OK" unless input field is empty
                     runMode.console.print('OK');
-                    runMode.console.clearLine(runMode.console.getDataObject().pos.y);
-                    //runMode.console.locate(0, runMode.console.getDataObject().pos.y - 1);
+                    runMode.console.clearLine(runMode.console.getDataObject.pos.y);
                 }
-                runMode.audio.beep(9);
             } catch(err) {
                 runMode.console.print(err.message);
                 runMode.audio.beep(2);
             }
 
-            inputData.textInput = '                                ';
+            // get next console line and copy to input field
+            consoleY = runMode.console.getDataObject.pos.y;
+            inputData.textInput.string = runMode.console.getDataObject.chrTable.text[consoleY];
+            inputData.textInput.color = runMode.console.getDataObject.chrTable.color[consoleY];
+            runMode.console.clearLine(consoleY);
             inputData.cursorPos.x = 0;
         }
         
         if (key === 'Backspace') {
+            e.preventDefault();
+            
             if (inputData.cursorPos.x > 0) {
-                inputData.textInput = inputData.textInput.deleteAt(inputData.cursorPos.x - 1) + ' ';
+                inputData.textInput.string = inputData.textInput.string.deleteAt(inputData.cursorPos.x - 1) + ' ';
+                inputData.textInput.color = inputData.textInput.color.deleteAt(inputData.cursorPos.x - 1) + '0';
                 inputData.cursorPos.x--;
             }
-            runMode.audio.beep(9);
         } else if (key === 'ArrowLeft' && inputData.cursorPos.x > 0) {
             inputData.cursorPos.x--;
         } else if (key === 'ArrowRight' && inputData.cursorPos.x < 31) {
             inputData.cursorPos.x++;
         }
 
+
         visible = 1;
         updateInput();
-    })
+    });
 
 
     console.log('[PTC.js] inputMode controller loaded');
 
 
     return {
-        getDataObject: function() {
-            return inputData;
-        }
-    }
+        getDataObject: inputData
+    };
 
 })();
 
 
 
+var pnl = (function() {
+
+    // pnlScreen div
+    var div = document.getElementById('pnlScreen');
+
+    // Keyboard data
+    var keys = {
+        kya: {
+            uc: [
+                ['1', '1', 25, 49],
+                ['2', '2', 41, 49],
+                ['3', '3', 57, 49],
+                ['4', '4', 73, 49],
+                ['5', '5', 89, 49],
+                ['6', '6', 105, 49],
+                ['7', '7', 121, 49],
+                ['8', '8', 137, 49],
+                ['9', '9', 153, 49],
+                ['0', '0', 169, 49],
+                ['hyphen', '-', 185, 49],
+                ['plus', '+', 201, 49],
+                ['equal', '=', 217, 49],
+                ['dollar', '$', 1, 73],
+                ['quot', '"', 17, 73],
+                ['ucQ', 'Q', 33, 73],
+                ['ucW', 'W', 49, 73],
+                ['ucE', 'E', 65, 73],
+                ['ucR', 'R', 81, 73],
+                ['ucT', 'T', 97, 73],
+                ['ucY', 'Y', 113, 73],
+                ['ucU', 'U', 129, 73],
+                ['ucI', 'I', 145, 73],
+                ['ucO', 'O', 161, 73],
+                ['ucP', 'P', 177, 73],
+                ['at', '@', 193, 73],
+                ['asterisk', '*', 209, 73],
+                ['oparen', '(', 225, 73],
+                ['cparen', ')', 241, 73],
+                ['exclamation', '!', 25, 97],
+                ['ucA', 'A', 41, 97],
+                ['ucS', 'S', 57, 97],
+                ['ucD', 'D', 73, 97],
+                ['ucF', 'F', 89, 97],
+                ['ucG', 'G', 105, 97],
+                ['ucH', 'H', 121, 97],
+                ['ucJ', 'J', 137, 97],
+                ['ucK', 'K', 153, 97],
+                ['ucL', 'L', 169, 97],
+                ['scolon', ';', 185, 97],
+                ['colon', ':', 201, 97],
+                ['lessthan', '<', 217, 97],
+                ['greaterthan', '>', 233, 97],
+                ['apostrophe', '\'', 33, 121],
+                ['ucZ', 'Z', 49, 121],
+                ['ucX', 'X', 65, 121],
+                ['ucC', 'C', 81, 121],
+                ['ucV', 'V', 97, 121],
+                ['ucB', 'B', 113, 121],
+                ['ucN', 'N', 129, 121],
+                ['ucM', 'M', 145, 121],
+                ['comma', ',', 161, 121],
+                ['period', '.', 177, 121],
+                ['fslash', '/', 193, 121],
+                ['percent', '%', 209, 121],
+                ['SPACE', ' ', 81, 145, 109, 13]
+            ],
+            lc : [
+                ['NONE', 'NONE', 25, 49],
+                ['NONE', 'NONE', 41, 49],
+                ['hash', '#', 57, 49],
+                ['NONE', '4', 73, 49],
+                ['NONE', '5', 89, 49],
+                ['ampersand', '&', 105, 49],
+                ['NONE', 'NONE', 121, 49],
+                ['caret', '^', 137, 49],
+                ['yen', '￥', 153, 49],
+                ['tilde', '~', 169, 49],
+                ['NONE', 'NONE', 185, 49],
+                ['bslash', '\\', 201, 49],
+                ['bar', '|', 217, 49],
+                ['NONE', 'NONE', 1, 73],
+                ['NONE', 'NONE', 17, 73],
+                ['lcQ', 'q', 33, 73],
+                ['lcW', 'w', 49, 73],
+                ['lcE', 'e', 65, 73],
+                ['lcR', 'r', 81, 73],
+                ['lcT', 't', 97, 73],
+                ['lcY', 'y', 113, 73],
+                ['lcU', 'u', 129, 73],
+                ['lcI', 'i', 145, 73],
+                ['lcO', 'o', 161, 73],
+                ['lcP', 'p', 177, 73],
+                ['grave', '`', 193, 73],
+                ['NONE', 'NONE', 209, 73],
+                ['obracket', '[', 225, 73],
+                ['cbracket', ']', 241, 73],
+                ['NONE', 'NONE', 25, 97],
+                ['lcA', 'a', 41, 97],
+                ['lcS', 's', 57, 97],
+                ['lcD', 'd', 73, 97],
+                ['lcF', 'f', 89, 97],
+                ['lcG', 'g', 105, 97],
+                ['lcH', 'h', 121, 97],
+                ['lcJ', 'j', 137, 97],
+                ['lcK', 'k', 153, 97],
+                ['lcL', 'l', 169, 97],
+                ['NONE', 'NONE', 185, 97],
+                ['NONE', 'NONE', 201, 97],
+                ['ocbracket', '{', 217, 97],
+                ['ccbracket', '}', 233, 97],
+                ['NONE', 'NONE', 33, 121],
+                ['lcZ', 'z', 49, 121],
+                ['lcX', 'x', 65, 121],
+                ['lcC', 'c', 81, 121],
+                ['lcV', 'v', 97, 121],
+                ['lcB', 'b', 113, 121],
+                ['lcN', 'n', 129, 121],
+                ['lcM', 'm', 145, 121],
+                ['NONE', 'NONE', 161, 121],
+                ['NONE', 'NONE', 177, 121],
+                ['question', '?', 193, 121],
+                ['underscore', '_', 209, 121],
+                ['SPACE', ' ', 81, 145, 109, 13]
+            ]
+        },
+        currentKb: 'kya',
+        currentCase: 'uc'
+    }
+
+    // Fixed keys
+    keys.fixed = [
+        ['BACKSPACE', 'Backspace', 233, 49, 21, 21],
+        ['ENTER', 'Enter', 225, 121, 29, 21],
+        [keys.currentCase + 'Caps', 'CapsLock', 1, 145, 13, 13],
+        ['ARROWUP', 'ArrowUp', 161, 169, 21, 21],
+        ['ARROWDOWN', 'ArrowDown', 185, 169, 21, 21],
+        ['ARROWLEFT', 'ArrowLeft', 209, 169, 21, 21],
+        ['ARROWRIGHT', 'ArrowRight', 233, 169, 21, 21],
+        ['HELP', 'helpKey', 1, 170, 30, 19]
+    ];
+
+    // Display selected keyboard/case
+    var drawKeys = function(kb, kbcase) {
+
+        // delete old keys
+        div.textContent = '';
+
+        // draw selected keys (keypress)
+        keys[kb][kbcase].forEach(function(cur) {
+            var key, keyId, img, x, y, width, height;
+
+            key = document.createElement('button');
+            img = 'url(./assets/pnl/keys/' + cur[0] + '.png)';
+            keyId = cur[1];
+            x = cur[2] + 'px';
+            y = cur[3] + 'px';
+            width = cur[4] + 'px';
+            height = cur[5] + 'px';
+    
+            key.classList.add('pnlKey');
+            key.setAttribute('keyId', keyId);
+            key.style.backgroundImage = img;
+            key.style.left = x;
+            key.style.top = y;
+            key.style.width = width;
+            key.style.height = height;
+    
+            div.appendChild(key);
+        });
+
+        // draw fixed keys (keydown)
+        keys.fixed.forEach(function(cur) {
+            var key, keyId, img, x, y, width, height;
+
+            key = document.createElement('button');
+            img = 'url(./assets/pnl/keys/' + cur[0] + '.png)';
+            keyId = cur[1];
+            x = cur[2] + 'px';
+            y = cur[3] + 'px';
+            width = cur[4] + 'px';
+            height = cur[5] + 'px';
+
+            key.classList.add('pnlKeyFixed');
+            key.setAttribute('keyId', keyId);
+            key.style.backgroundImage = img;
+            key.style.left = x;
+            key.style.top = y;
+            key.style.width = width;
+            key.style.height = height;
+    
+            div.appendChild(key);
+        });
+    };
+
+    var switchCase = function() {
+        if (keys.currentCase === 'uc') {
+            keys.currentCase = 'lc';
+        } else if (keys.currentCase === 'lc') {
+            keys.currentCase = 'uc';
+        }
+
+        keys.fixed[2][0] = keys.currentCase + 'Caps';
+        drawKeys(keys.currentKb, keys.currentCase);
+    };
+
+
+    // add EventListener to all pnlScreen elements
+    div.addEventListener('click', function(e) {
+        var clickedElement = e.target;
+        event.preventDefault();
+
+        if (clickedElement.nodeName === 'BUTTON') { // detect click from buttons only, not background div
+            var keyId, keyEvent;
+            keyId = clickedElement.getAttribute('keyId');
+
+            if (clickedElement.getAttribute('class') === 'pnlKey') { // if key is typeable (keypress)
+                if (keyId !== 'NONE') {
+                    keyEvent = new KeyboardEvent('keypress', {key: keyId});
+                }
+            } else if (clickedElement.getAttribute('class') === 'pnlKeyFixed') { // if key is not typeable (keydown)
+                if (keyId === 'helpKey') { // if help key is pressed, else create new KeyboardEvent
+                    open('./commands.html');
+                } else if (keyId === 'CapsLock') {
+                    switchCase();
+                } else {
+                    keyEvent = new KeyboardEvent('keydown', {key: keyId});
+                }
+            }
+
+            runMode.audio.beep(9);
+
+            if (keyEvent) {
+                document.dispatchEvent(keyEvent); // execute key event, unless no event was created (special buttons)
+            }
+            clickedElement.blur(); // unfocus button
+        }
+    });
+
+
+    console.log('[PTC.js] PNL controller loaded');
+
+
+    return {
+        keys: keys,
+        drawKeys: drawKeys,
+        switchCase: switchCase
+    };
+    
+})();
+
+
+
+
 runMode.console.welcome();
+pnl.drawKeys(pnl.keys.currentKb, pnl.keys.currentCase); // default keyboard
 /// stupid browser cache

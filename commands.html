@@ -138,7 +138,7 @@
                     <li>Your mother (I couldn't think of anything else).</li>
                 </ul>
                 &nbsp;
-                <p>So far, there are very little commands, and they can only be inputted through the Javascript console. However, this project has only just started and is nowhere near completion. Expect more features soon.</p>
+                <p>So far, there are very little commands, and they can only be inputted using JavaScript syntax. However, this project has only just started and is nowhere near completion. Expect more features soon.</p>
             </div>
 
             <div class="anchor" id="cmdrules">
@@ -156,18 +156,25 @@
                 <ul>
                     <li>PTC syntax interpreter.</li>
                     <li>Edit mode.</li>
-                    <li>On-screen keyboard functionality.</li>
+                    <li>Full PNL functionality.</li>
                     <li>Make blank console spaces and actual spaces separate text characters.</li>
                 </ul>
             </div>
             <div class="anchor" id="updates">
                 <h2>Updates:</h2>
 
+                <h3>August 12, 2020</h3>
+                <p>Fixed more input bugs. The console/input layers are nearly finished.</p>
+                <p>Added on-screen keyboard support (kinda).</p>
+                <p>Added <i>pnl.keys</i>, <i>pnl.drawKeys(kb, kbcase)</i>, and <i>pnl.switchCase()</i><strong>*</strong>.</p>
+
                 <h3>August 8, 2020</h3>
                 <p>Fixed input bugs and created a new input system.</p>
                 <p>Turned down beep volume until volume parameters are implemented into the command.</p>
-                <p>Prepared the on-screen keyboard for on-screen keyboard-ness.</p>
+                <p>Prepared the on-screen keyboard for on-screen keyboardness.</p>
                 <p>Added the <i>clearLine()</i><strong>*</strong> command.</p>
+                <p>Added <i>inputMode.getDataObject</i><strong>*</strong>.</p>
+                <p>Deleted old console dev commands in favor of <i>runMode.console.getDataObject</i><strong>*</strong>.</p>
 
                 <h3>August 7, 2020<sup>+</sup></h3>
                 <p>Added the ability to input commands through the PTC console (JS syntax only).</p>
@@ -179,7 +186,7 @@
                     <li>CHR$()</li>
                     <li>BEEP</li>
                 </ul>
-                <p>Renamed the following commands:</p>
+                <p>Renamed the following console commands:</p>
                 <ul>
                     <li><i>default()</i> to <i>welcome()</i>.</li>
                     <li><i>getConsoleChrIDs()</i> to <i>getChrIDs()</i>.</li>
@@ -189,21 +196,21 @@
                 <p>Cleaned up the console's code.</p>
 
                 <h3>July 13, 2020</h3>
-                <p>Added the following commands:</p>
+                <p>Added the following console commands:</p>
                 <ul>
                     <li><i>getChrIDs()</i><strong>*</strong></li>
                     <li><i>printChrIDs()</i><strong>*</strong></li>
                 </ul>
 
                 <h3>July 11, 2020</h3>
-                <p>Added the following commands:</p>
+                <p>Added the following console commands:</p>
                 <ul>
                     <li>CHKCHR() (as well as a new system for keeping track of console characters)</li>
                     <li><i>getChrTable()</i><strong>*</strong></li>
                 </ul>
 
                 <h3>July 9, 2020</h3>
-                <p>Added the following commands:</p>
+                <p>Added the following console/graphic commands:</p>
                 <ul>
                     <li>CLS</li>
                     <li>PRINT</li>
@@ -214,8 +221,8 @@
                     <li><i>default()</i><strong>*</strong></li>
                 </ul>
                 &nbsp;
-                <p><strong><i>*behind-the-scenes JS function. Use only for debugging.</i></strong></p>
-                <p><i><sup>+</sup><strong> very big update.</i></strong></p>
+                <p><strong><i>*behind-the-scenes JS function/object. Use only for debugging.</i></strong></p>
+                <p><i><sup>+</sup><strong> fat update.</i></strong></p>
             </div>
 
             <div class="anchor" id="consolecommands">
