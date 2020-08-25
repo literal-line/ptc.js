@@ -1,5 +1,7 @@
 // ptc.js """"""interpreter""""""" by Literal Line
-document.getElementById('editScreen').style.display = 'none';
+//
+// build August 24, 2020
+
 
 // custom function to insert string at index
 String.prototype.insertAt = function(index, insert) {
@@ -17,9 +19,14 @@ String.prototype.replaceAt = function(index, replacement) {
 };
 
 // jQuery is for lazy losers haha
-function findId(id) {
+function fId(id) {
     return document.getElementById(id);
 }
+
+
+fId('editScreen').style.display = 'none';
+
+
 
 
 var runMode = (function() {
@@ -39,11 +46,11 @@ var runMode = (function() {
     };
 
     // define variables for canvases and set default resolutions
-    var consoleCanvas = findId('console');
-    var BGFCanvas = findId('bgFront');
-    var spriteCanvas = findId('sprite');
-    var BGRCanvas = findId('bgRear');
-    var graphicCanvas = findId('graphic');
+    var consoleCanvas = fId('console');
+    var BGFCanvas = fId('bgFront');
+    var spriteCanvas = fId('sprite');
+    var BGRCanvas = fId('bgRear');
+    var graphicCanvas = fId('graphic');
     defaultRes();
 
     // set canvas contexts
@@ -115,7 +122,7 @@ var runMode = (function() {
             ]
         },
 
-        pallete: [ // default color pallete for console, bg, and sprites
+        palette: [ // default color palette for console, bg, and sprites
             '#FFFFFF',
             '#000000',
             '#BFBFBF',
@@ -153,7 +160,7 @@ var runMode = (function() {
             '','','','','','','','','','','','','','','',''
         ]
     };
-    consoleData.currentColor = consoleData.pallete[0];
+    consoleData.currentColor = consoleData.palette[0];
     consoleData.chrTableDefault = function() {
         this.chrTable.text = [
             '                                ', // 0
@@ -195,8 +202,188 @@ var runMode = (function() {
         consCtx.clearRect(0, 736, 1024, 32);
     };
 
-    // create AudioContext for sound
-    var audioContext = new AudioContext();
+    var consoleCmds = {
+
+        acls: function() {
+            this.cls();
+            // more stuff
+        },
+
+        cls: function() {
+            consoleData.chrTableDefault();
+            consCtx.clearRect(0, 0, 1024, 768);
+            consoleData.pos.x = 0;
+            consoleData.pos.y = 0;
+        },
+
+        locate: function(x, y) {
+            if ((x >= 0 && x <= 31) || (y >= 0 && y <= 23)) {
+                consoleData.pos.x = x;
+                consoleData.pos.y = y;
+            } else {
+                consoleData.pos.x = 0;
+                consoleData.pos.y = 0;
+            }
+        },
+
+        color: function(color) {
+            consoleData.currentColor = consoleData.palette[Math.floor(color)];
+        },
+
+        print: function(text) { // print text on console layer
+            // text = String(text);
+            text = (typeof (text) !== 'undefined') ? String(text) : '';
+
+            // consoleData shorthand
+            var x, y;
+            x = Math.floor(consoleData.pos.x);
+            y = Math.floor(consoleData.pos.y);
+
+            consCtx.font = '48pt ptc';
+            consCtx.fillStyle = consoleData.currentColor;
+
+
+
+            // clear space for text, draw text, and add text to CHKCHR() table
+            for (var i = 0; i < text.length; i++) {
+
+                var currentChr = text.charAt(i);
+
+                if (x > 31) {
+                    x = 0;
+                    y++;
+                }
+
+                // if console y position is too large
+                if (y > 22) {
+                    consoleData.newLine();
+                    
+                    // move console y position back up and update y shorthand
+                    consoleData.pos.y = 22;
+                    y = consoleData.pos.y;
+                }
+
+                consCtx.clearRect(x * 32, y * 32, 32, 32);
+                consCtx.fillText(currentChr, x * 32, (y + 1) * 32);
+                consoleData.chrTable.text[y] = consoleData.chrTable.text[y].replaceAt(x, currentChr);
+                consoleData.chrTable.color[y] = consoleData.chrTable.color[y].replaceAt(x, consoleData.palette.indexOf(consoleData.currentColor).toString(16));
+
+                x++;
+            }
+
+            // next line
+            consoleData.pos.x = 0;
+            consoleData.pos.y = y + 1;
+        },
+
+        asc: function(chr) {
+            chr = chr.charAt(0);
+            chrIndex = consoleData.chrIDs.indexOf(chr)
+            if (chrIndex !== 0 && chrIndex !== -1) {
+                return chrIndex;
+            }
+        },
+
+        chr$: function(id) {
+            return consoleData.chrIDs[id];
+        },
+
+        chkChr: function(x, y) {
+            var selectedChr = consoleData.chrTable.text[y].charAt(x);
+            return consoleData.chrIDs.indexOf(selectedChr);
+        },
+
+        // dev stuff
+        clearLine: function(y) {
+            consCtx.clearRect(0, y * 32, 1024, 32);
+            consoleData.chrTable.text[y] = '                                ';
+        },
+
+        getDataObject: consoleData,
+
+        printChrIDs: function() {
+            this.print(' ');
+            this.print('');
+            this.print(' !"#$%&\'()*+,-./');
+            this.print('0123456789:;<=>?');
+            this.print('@ABCDEFGHIJKLMNO');
+            this.print('PQRSTUVWXYZ[¥]^_');
+            this.print('`abcdefghijklmno');
+            this.print('pqrstuvwxyz{|}~/');
+            this.print('');
+            this.print('');
+            this.print('~。「」、・ヲァィゥェォャュョッ');
+            this.print('ーアイウエオカキクケコサシスセソ');
+            this.print('タチツテトナニヌネノハヒフヘホマ');
+            this.print('ミムメモヤユヨラリルレロワン゛゜');
+            this.print('');
+            this.print('');
+        },
+
+        welcome: function() { // default text on start
+            this.cls();
+            this.color(0);
+            this.print('PetitComputer ver2.2');
+            this.print('SMILEBASIC 1048576 bytes free');
+            this.print('Build August 24, 2020');
+            this.print('');
+            this.print('READY');
+            this.print('');
+            this.color(13);
+            this.print('At the moment, commands can');
+            this.print('only be inputted using the');
+            this.print('cursed');
+            this.color(3);
+            this.locate(7, 8);
+            this.print('Javascript');
+            this.locate(18, 8);
+            this.color(13);
+            this.print('format.');
+            this.color(0);
+        }
+
+    };
+
+    var bgCmds = {
+        // none rn
+    };
+
+    var spriteCmds = {
+        // none rn
+    };
+
+    var graphicCmds = {
+
+        gcls: function() {
+            graphicCtx.clearRect(0, 0, 256, 192);
+        },
+        
+        gline: function(x1, y1, x2, y2, color) {
+            graphicCtx.strokeStyle = consoleData.palette[color];
+            graphicCtx.lineWidth = 1;
+            graphicCtx.beginPath();
+            graphicCtx.moveTo(x1, y1);
+            graphicCtx.lineTo(x2, y2);
+            graphicCtx.stroke();
+        }
+
+    };
+
+    var audioCmds = {
+
+        beep: function(id, vol) {
+            id = id || 0;
+            vol = (typeof vol === 'undefined') ? 0.5 : vol / 127 * 0.5;
+
+            if (vol >= 0 && vol <= 0.5) {
+                var sound = new Audio(beepDir + 'BEEP' + id + '.mp3');
+
+                sound.volume = vol;
+                sound.play();
+            }
+        }
+
+    };
 
     // directory for sounds used with BEEP function
     var beepDir = './assets/audio/beep/';
@@ -207,187 +394,20 @@ var runMode = (function() {
 
     return { // all methods that can be used in run mode, categorized by their type
 
-        console: {
+        // raw commands for debug use
+        console: consoleCmds,
 
-            acls: function() {
-                this.cls();
-                // more stuff
-            },
+        bg: bgCmds,
 
-            cls: function() {
-                consoleData.chrTableDefault();
-                consCtx.clearRect(0, 0, 1024, 768);
-                consoleData.pos.x = 0;
-                consoleData.pos.y = 0;
-            },
+        sprite: spriteCmds,
 
-            locate: function(x, y) {
-                if ((x >= 0 && x <= 31) || (y >= 0 && y <= 23)) {
-                    consoleData.pos.x = x;
-                    consoleData.pos.y = y;
-                } else {
-                    consoleData.pos.x = 0;
-                    consoleData.pos.y = 0;
-                }
-            },
+        graphic: graphicCmds,
 
-            color: function(color) {
-                consoleData.currentColor = consoleData.pallete[color];
-            },
+        audio: audioCmds,
 
-            print: function(text) { // print text on console layer
-                // text = String(text);
-                text = (typeof (text) !== 'undefined') ? String(text) : '';
-
-                // consoleData shorthand
-                var x, y;
-                x = consoleData.pos.x;
-                y = consoleData.pos.y;
-
-                consCtx.font = '48pt ptc';
-                consCtx.fillStyle = consoleData.currentColor;
-
-
-
-                // clear space for text, draw text, and add text to CHKCHR() table
-                for (var i = 0; i < text.length; i++) {
-
-                    var currentChr = text.charAt(i);
-
-                    if (x > 31) {
-                        x = 0;
-                        y++;
-                    }
-
-                    // if console y position is too large
-                    if (y > 22) {
-                        consoleData.newLine();
-                        
-                        // move console y position back up and update y shorthand
-                        consoleData.pos.y = 22;
-                        y = consoleData.pos.y;
-                    }
-
-                    consCtx.clearRect(x * 32, y * 32, 32, 32);
-                    consCtx.fillText(currentChr, x * 32, (y + 1) * 32);
-                    consoleData.chrTable.text[y] = consoleData.chrTable.text[y].replaceAt(x, currentChr);
-                    consoleData.chrTable.color[y] = consoleData.chrTable.color[y].replaceAt(x, consoleData.pallete.indexOf(consoleData.currentColor).toString(16));
-
-                    x++;
-                }
-
-                // next line
-                consoleData.pos.x = 0;
-                consoleData.pos.y = y + 1;
-            },
-
-            asc: function(chr) {
-                chr = chr.charAt(0);
-                chrIndex = consoleData.chrIDs.indexOf(chr)
-                if (chrIndex !== 0 && chrIndex !== -1) {
-                    return chrIndex;
-                }
-            },
-
-            chr$: function(id) {
-                return consoleData.chrIDs[id];
-            },
-
-            chkChr: function(x, y) {
-                var selectedChr = consoleData.chrTable.text[y].charAt(x);
-                return consoleData.chrIDs.indexOf(selectedChr);
-            },
-
-            // dev stuff
-            clearLine: function(y) {
-                consCtx.clearRect(0, y * 32, 1024, 32);
-                consoleData.chrTable.text[y] = '                                ';
-            },
-
-            getDataObject: consoleData,
-
-            printChrIDs: function() {
-                this.print(' ');
-                this.print('');
-                this.print(' !"#$%&\'()*+,-./');
-                this.print('0123456789:;<=>?');
-                this.print('@ABCDEFGHIJKLMNO');
-                this.print('PQRSTUVWXYZ[¥]^_');
-                this.print('`abcdefghijklmno');
-                this.print('pqrstuvwxyz{|}~/');
-                this.print('');
-                this.print('');
-                this.print('~。「」、・ヲァィゥェォャュョッ');
-                this.print('ーアイウエオカキクケコサシスセソ');
-                this.print('タチツテトナニヌネノハヒフヘホマ');
-                this.print('ミムメモヤユヨラリルレロワン゛゜');
-                this.print('');
-                this.print('');
-            },
-
-            welcome: function() { // default text on start
-                this.cls();
-                this.color(0);
-                this.print('PetitComputer ver2.2');
-                this.print('SMILEBASIC 1048576 bytes free');
-                this.print('(C)2011-2012 SmileBoom Co.Ltd.');
-                this.print('');
-                this.print('READY');
-                this.print('');
-                this.color(13);
-                this.print('At the moment, commands can');
-                this.print('only be inputted using the');
-                this.print('cursed');
-                this.color(3);
-                this.locate(7, 8);
-                this.print('Javascript');
-                this.locate(18, 8);
-                this.color(13);
-                this.print('format.');
-                this.color(0);
-            }
-
-        },
-
-        bg: {
-            //
-        },
-
-        sprite: { // sprite will stay in between BGF and BGR for now...
-            //
-        },
-
-        graphic: {
-
-            gcls: function() {
-                graphicCtx.clearRect(0, 0, 256, 192);
-            },
-            
-            gline: function(x1, y1, x2, y2, color) {
-                graphicCtx.strokeStyle = consoleData.pallete[color];
-                graphicCtx.lineWidth = 1;
-                graphicCtx.beginPath();
-                graphicCtx.moveTo(x1, y1);
-                graphicCtx.lineTo(x2, y2);
-                graphicCtx.stroke();
-            }
-
-        },
-
-        audio: {
-
-            beep: function(id, vol) {
-                id = id || 0;
-                vol = (typeof vol === 'undefined') ? 0.5 : vol / 127 * 0.5;
-
-                if (vol >= 0 && vol <= 0.5) {
-                    var sound = new Audio(beepDir + 'BEEP' + id + '.mp3');
-    
-                    sound.volume = vol;
-                    sound.play();
-                }
-            }
-
+        init: function() {
+            this.console.welcome();
+            this.graphic.gcls();
         }
 
     };
@@ -410,8 +430,8 @@ var inputMode = (function() {
     };
 
     // define variables for canvases and set default resolution
-    var cursor = findId('inputCursor');
-    var text = findId('inputText');
+    var cursor = fId('inputCursor');
+    var text = fId('inputText');
     defaultRes();
 
     // set canvas contexts
@@ -439,34 +459,50 @@ var inputMode = (function() {
 
 
     // text input / blinking cursor function (called every 500ms / on text input)
-    var visible = 1;
-    var updateInput = function() {
-        var x, y, text, color;
-        inputData.update();
-        x = inputData.cursorPos.x * 32;
-        y = (inputData.cursorPos.y + 1) * 32;
-        text = inputData.textInput.string;
-        color = inputData.currentColor;
+    var updateInput = (function() {
+        var visible = 1;
 
-        cursorCtx.clearRect(0, 0, 1024, 768);
-        textCtx.clearRect(0, 0, 1024, 768);
-
-        // draw cursor to cursor canvas if visible variable === 1
-        cursorCtx.fillStyle = '#FFFFFF';
-        if (visible === 1) {
-            cursorCtx.fillRect(x, y - 4, 28, -8);
+        return function() {
+            var x, y, text, color;
+            inputData.update();
+            x = inputData.cursorPos.x * 32;
+            y = (inputData.cursorPos.y + 1) * 32;
+            text = inputData.textInput.string;
+            color = inputData.currentColor;
+    
+            cursorCtx.clearRect(0, 0, 1024, 768);
+            textCtx.clearRect(0, 0, 1024, 768);
+    
+            // draw cursor to cursor canvas if visible variable === 1
+            cursorCtx.fillStyle = '#FFFFFF';
+            if (visible === 1) {
+                cursorCtx.fillRect(x, y - 4, 28, -8);
+            }
+            visible = -(visible);
+    
+            // draw text to text canvas
+            textCtx.font = '48pt ptc';
+            var consoleData = runMode.console.getDataObject;
+            for (var i = 0; i <= 31; i++) {
+                textCtx.fillStyle = consoleData.palette[parseInt(inputData.textInput.color.charAt(i), 16)];
+                textCtx.fillText(text[i], i * 32, y);
+            }
         }
-        visible = -(visible);
+    })();
 
-        // draw text to text canvas
-        textCtx.font = '48pt ptc';
-        var consoleData = runMode.console.getDataObject;
-        for (var i = 0; i <= 31; i++) {
-            textCtx.fillStyle = consoleData.pallete[parseInt(inputData.textInput.color.charAt(i), 16)];
-            textCtx.fillText(text[i], i * 32, y);
+    // enable/disable input
+    var isEnabled = (function() {
+        var inputInterval;
+
+        return function(bool) {
+            if (bool) {
+                inputInterval = setInterval(updateInput, 500);
+            } else {
+                console.log('bruh');
+                clearInterval(inputInterval);
+            }
         }
-    };
-    setInterval(updateInput, 500);
+    })();
 
     // detect typing
     document.addEventListener('keypress', function(e) {
@@ -476,7 +512,7 @@ var inputMode = (function() {
             e.preventDefault();
 
             inputData.textInput.string = inputData.textInput.string.insertAt(inputData.cursorPos.x, key);
-            inputData.textInput.color = inputData.textInput.color.insertAt(inputData.cursorPos.x, runMode.console.getDataObject.pallete.indexOf(inputData.currentColor));
+            inputData.textInput.color = inputData.textInput.color.insertAt(inputData.cursorPos.x, runMode.console.getDataObject.palette.indexOf(inputData.currentColor));
             inputData.textInput.string = inputData.textInput.string.slice(0, -1);
             inputData.textInput.color = inputData.textInput.color.slice(0, -1);
 
@@ -484,7 +520,6 @@ var inputMode = (function() {
                 inputData.cursorPos.x++;
             }
 
-            visible = 1;
             updateInput();
         }
     });
@@ -502,7 +537,7 @@ var inputMode = (function() {
             try {
                 runMode.console.print(input);
                 var result = eval(input);
-                //eval(input);
+
                 if (input !== '                                ') { // print "OK" unless input field is empty
                     runMode.console.print('OK');
                     runMode.console.clearLine(runMode.console.getDataObject.pos.y);
@@ -535,7 +570,6 @@ var inputMode = (function() {
         }
 
 
-        visible = 1;
         updateInput();
     });
 
@@ -544,7 +578,14 @@ var inputMode = (function() {
 
 
     return {
-        getDataObject: inputData
+
+        getDataObject: inputData,
+        isEnabled: isEnabled,
+        
+        init: function() {
+            isEnabled(true);
+        }
+
     };
 
 })();
@@ -554,13 +595,15 @@ var inputMode = (function() {
 var pnl = (function() {
 
     // pnlScreen div
-    var div = document.getElementById('pnlScreen');
+    var div = fId('pnlScreen');
+    var kbDiv = fId('kbScreen');
+    var btnDiv = fId('btnScreen');
 
     // Keyboard data
     var keys = {
         kya: {
             uc: [
-                ['1', '1', 25, 49],
+                ['1', '1', 25, 49], // image name, keypress id, x from left, y from top
                 ['2', '2', 41, 49],
                 ['3', '3', 57, 49],
                 ['4', '4', 73, 49],
@@ -621,8 +664,8 @@ var pnl = (function() {
                 ['NONE', 'NONE', 25, 49],
                 ['NONE', 'NONE', 41, 49],
                 ['hash', '#', 57, 49],
-                ['NONE', '4', 73, 49],
-                ['NONE', '5', 89, 49],
+                ['NONE', 'NONE', 73, 49],
+                ['NONE', 'NONE', 89, 49],
                 ['ampersand', '&', 105, 49],
                 ['NONE', 'NONE', 121, 49],
                 ['caret', '^', 137, 49],
@@ -678,30 +721,34 @@ var pnl = (function() {
         },
         currentKb: 'kya',
         currentCase: 'uc'
-    }
+    };
 
     // Fixed keys
     keys.fixed = [
         ['BACKSPACE', 'Backspace', 233, 49, 21, 21],
         ['ENTER', 'Enter', 225, 121, 29, 21],
         [keys.currentCase + 'Caps', 'CapsLock', 1, 145, 13, 13],
-        ['ARROWUP', 'ArrowUp', 161, 169, 21, 21],
+    ];
+
+    // PNL keys
+    pnlButtons = [
+        ['ARROWUP', 'ArrowUp', 161, 169, 21, 21], // image name, keydown id, x from left, y from top, width, height
         ['ARROWDOWN', 'ArrowDown', 185, 169, 21, 21],
         ['ARROWLEFT', 'ArrowLeft', 209, 169, 21, 21],
         ['ARROWRIGHT', 'ArrowRight', 233, 169, 21, 21],
-        ['HELP', 'helpKey', 1, 170, 30, 19]
+        ['HELP', 'helpBtn', 1, 170, 30, 19]
     ];
+
 
     // Display selected keyboard/case
     var drawKeys = function(kb, kbcase) {
+        var key, keyId, img, x, y, width, height;
 
         // delete old keys
-        div.textContent = '';
+        kbDiv.textContent = '';
 
         // draw selected keys (keypress)
         keys[kb][kbcase].forEach(function(cur) {
-            var key, keyId, img, x, y, width, height;
-
             key = document.createElement('button');
             img = 'url(./assets/pnl/keys/' + cur[0] + '.png)';
             keyId = cur[1];
@@ -709,7 +756,7 @@ var pnl = (function() {
             y = cur[3] + 'px';
             width = cur[4] + 'px';
             height = cur[5] + 'px';
-    
+
             key.classList.add('pnlKey');
             key.setAttribute('keyId', keyId);
             key.style.backgroundImage = img;
@@ -717,14 +764,12 @@ var pnl = (function() {
             key.style.top = y;
             key.style.width = width;
             key.style.height = height;
-    
-            div.appendChild(key);
+
+            kbDiv.appendChild(key);
         });
 
         // draw fixed keys (keydown)
         keys.fixed.forEach(function(cur) {
-            var key, keyId, img, x, y, width, height;
-
             key = document.createElement('button');
             img = 'url(./assets/pnl/keys/' + cur[0] + '.png)';
             keyId = cur[1];
@@ -740,11 +785,37 @@ var pnl = (function() {
             key.style.top = y;
             key.style.width = width;
             key.style.height = height;
-    
-            div.appendChild(key);
+
+            kbDiv.appendChild(key);
         });
     };
 
+    // Display PNL buttons
+    var drawBtn = function() {
+        var btn, btnId, img, x, y, width, height;
+
+        pnlButtons.forEach(function(cur) {
+            btn = document.createElement('button');
+            img = 'url(./assets/pnl/buttons/' + cur[0] + '.png)';
+            btnId = cur[1];
+            x = cur[2] + 'px';
+            y = cur[3] + 'px';
+            width = cur[4] + 'px';
+            height = cur[5] + 'px';
+
+            btn.classList.add('pnlBtn');
+            btn.setAttribute('btnId', btnId);
+            btn.style.backgroundImage = img;
+            btn.style.left = x;
+            btn.style.top = y;
+            btn.style.width = width;
+            btn.style.height = height;
+
+            btnDiv.appendChild(btn);
+        });
+    };
+
+    // Toggle upper/lowercase
     var switchCase = function() {
         if (keys.currentCase === 'uc') {
             keys.currentCase = 'lc';
@@ -757,36 +828,57 @@ var pnl = (function() {
     };
 
 
-    // add EventListener to all pnlScreen elements
+    // a very nice PNL key/button handler :)
     div.addEventListener('click', function(e) {
         var clickedElement = e.target;
         event.preventDefault();
 
-        if (clickedElement.nodeName === 'BUTTON') { // detect click from buttons only, not background div
-            var keyId, keyEvent;
-            keyId = clickedElement.getAttribute('keyId');
+        var keyEvent, keyId;
+        switch(clickedElement.getAttribute('class')) {
+            case 'pnlKey':
+                keyId = clickedElement.getAttribute('keyId');
 
-            if (clickedElement.getAttribute('class') === 'pnlKey') { // if key is typeable (keypress)
                 if (keyId !== 'NONE') {
                     keyEvent = new KeyboardEvent('keypress', {key: keyId});
+                    document.dispatchEvent(keyEvent);
                 }
-            } else if (clickedElement.getAttribute('class') === 'pnlKeyFixed') { // if key is not typeable (keydown)
-                if (keyId === 'helpKey') { // if help key is pressed, else create new KeyboardEvent
-                    open('./commands.html');
-                } else if (keyId === 'CapsLock') {
-                    switchCase();
-                } else {
-                    keyEvent = new KeyboardEvent('keydown', {key: keyId});
+                runMode.audio.beep(9);
+                break;
+
+            case 'pnlKeyFixed':
+                keyId = clickedElement.getAttribute('keyId');
+
+                switch(keyId) {
+                    case 'CapsLock':
+                        switchCase();
+                        break;
+                        
+                    default:
+                        keyEvent = new KeyboardEvent('keydown', {key: keyId});
+                        document.dispatchEvent(keyEvent);
                 }
-            }
+                runMode.audio.beep(9);
+                break;
 
-            runMode.audio.beep(9);
+            case 'pnlBtn':
+                var btnId = clickedElement.getAttribute('btnId');
 
-            if (keyEvent) {
-                document.dispatchEvent(keyEvent); // execute key event, unless no event was created (special buttons)
-            }
-            clickedElement.blur(); // unfocus button
+                switch(btnId) {
+                    case 'helpBtn':
+                        open('./commands.html');
+                        break;
+
+                    default:
+                        keyEvent = new KeyboardEvent('keydown', {key: btnId});
+                        document.dispatchEvent(keyEvent);
+                }
+                break;
+
+            default:
+                console.log('not a key!');
         }
+
+        clickedElement.blur();
     });
 
 
@@ -794,16 +886,87 @@ var pnl = (function() {
 
 
     return {
+
         keys: keys,
         drawKeys: drawKeys,
-        switchCase: switchCase
+        drawBtn: drawBtn,
+        switchCase: switchCase,
+
+        init: function() {
+            pnl.drawKeys(pnl.keys.currentKb, pnl.keys.currentCase);
+            pnl.drawBtn();
+        }
+
     };
     
 })();
 
 
 
+var inputHandler = (function() { // unused for now...
 
-runMode.console.welcome();
-pnl.drawKeys(pnl.keys.currentKb, pnl.keys.currentCase); // default keyboard
-/// stupid browser cache
+    var buttonCodes = {
+        1: 'ArrowUp',
+        2: 'ArrowDown',
+        4: 'ArrowLeft',
+        8: 'ArrowRight',
+        16: 'Z',
+        32: 'X',
+        64: 'A',
+        128: 'S',
+        256: 'Q',
+        512: 'W',
+        1024: 'Enter'
+    };
+    var pressedButtons = 0;
+
+
+    document.addEventListener('keydown', function(e) {
+        var key = e.key.length < 2 ? e.key.toUpperCase() : e.key;
+
+        for (var i = 1; i <= 1024; i = i*2) {
+            if (buttonCodes[i] === key) {
+                pressedButtons += i;
+            }
+        }
+    });
+
+    document.addEventListener('keyup', function(e) {
+        var key = e.key.length < 2 ? e.key.toUpperCase() : e.key;
+
+        for (var i = 1; i <= 1024; i = i*2) {
+            if (buttonCodes[i] === key) {
+                pressedButtons -= i;
+            }
+        }
+    });
+
+
+    return {
+
+        button: function() {
+            return pressedButtons;
+        },
+
+        mapButton: function(btnId, key) {
+            if (buttonCodes[btnId]) {
+                buttonCodes[btnId] = key;
+            } else {
+                return 'Button ID does not exist!';
+            }
+        },
+
+        getButtonMap: function() {
+            return buttonCodes;
+        }
+
+    }
+
+})();
+
+
+
+
+runMode.init(); // console welcome screen
+inputMode.init();
+pnl.init(); // default keyboard

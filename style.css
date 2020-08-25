@@ -19,6 +19,10 @@ body {
     font-family: 'ptc';
 }
 
+p {
+    margin: 0;
+}
+
 a {
     color: inherit;
 }
@@ -93,7 +97,7 @@ a {
     background-image: url('./assets/pnl/pnl.png');
 }
 
-.pnlKey, .pnlKeyFixed {
+.pnlKey, .pnlKeyFixed, .pnlBtn {
     position: absolute;
     -webkit-user-drag: none;
     -khtml-user-drag: none;
@@ -108,12 +112,12 @@ a {
     background: transparent;
 }
 
-.pnlKey:hover, .pnlKeyFixed:hover {
+.pnlKey:hover, .pnlKeyFixed:hover, .pnlBtn:hover {
     transform: translate(1px, 1px);
     outline: none;
 }
 
-.pnlKey:active, .pnlKeyFixed:active {
+.pnlKey:active, .pnlKeyFixed:active, .pnlBtn:active {
     transform: translate(0px, 0px);
     outline: none;
 }

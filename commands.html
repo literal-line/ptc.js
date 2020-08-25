@@ -135,7 +135,8 @@
                 <ul>
                     <li>A 256 pixel by 384 pixel resolution, the DSi's native resolution.</li>
                     <li>JavaScript integration with PTC commands.</li>
-                    <li>Your mother (I couldn't think of anything else).</li>
+                    <li>Written in ES5 in case your browser sucks or something.</li>
+                    <li>A hardworking coder that is willing to fix any and all bugs (even if he's not the best programmer out there).</li>
                 </ul>
                 &nbsp;
                 <p>So far, there are very little commands, and they can only be inputted using JavaScript syntax. However, this project has only just started and is nowhere near completion. Expect more features soon.</p>
@@ -163,8 +164,15 @@
             <div class="anchor" id="updates">
                 <h2>Updates:</h2>
 
+                <h3>August 24, 2020</h3>
+                <p>Used Math.floor() so console text <i>actually snaps to the 32x24 grid</i> (whoops).</p>
+                <p>Floored COLOR command parameter as well (might have to do some more floor-ing).</p>
+                <p>Revamped the code for the PNL screen. Everything is accurate to PTC (except key repeat due to HTML buttons).</p>
+                <p>Started progress on a dedicated inputHandler for later use.</p>
+
                 <h3>August 12, 2020</h3>
                 <p>Fixed more input bugs. The console/input layers are nearly finished.</p>
+                <p>Added a volume parameter to the BEEP command.</p>
                 <p>Added on-screen keyboard support (kinda).</p>
                 <p>Added <i>pnl.keys</i>, <i>pnl.drawKeys(kb, kbcase)</i>, and <i>pnl.switchCase()</i><strong>*</strong>.</p>
 
@@ -230,8 +238,8 @@
                 <p>The console layer is the highest layer on the upper screen. It used to print strings of text.</p>
                 Console character range:
                 <ul>
-                    <li>X: 0-23</li>
-                    <li>Y: 0-31</li>
+                    <li>X: 0-31</li>
+                    <li>Y: 0-23</li>
                 </ul>
                 <p>The following commands can be used with the console:</p>
                 
@@ -325,7 +333,7 @@
 
                 <div class="anchor" id="beep">
                     <h3>BEEP</h3>
-                    <p>Parameters: none <strong>OR</strong> 0-69</p>
+                    <p>Parameters: [sound ID, volume]</p>
                     <p>JS format: <code>runMode.audio.beep()</code></p>
                     <p>PTC format: <code>BEEP</code></p>
                     &nbsp;
