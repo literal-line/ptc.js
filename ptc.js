@@ -865,7 +865,7 @@ var pnl = (function() {
         ['ESCAPE', 'Escape', 1, 49, 21, 21],
         ['BACKSPACE', 'Backspace', 233, 49, 21, 21],
         ['ENTER', 'Enter', 225, 121, 29, 21],
-        ['ShiftFalse', 'Shift', 1, 121, 29, 21],
+        ['Shiftfalse', 'Shift', 1, 121, 29, 21],
         [keys.currentCase + 'Caps', 'CapsLock', 1, 145, 13, 13],
         ['kya' + (keys.currentKb === 'kya' ? (keys.invertCase ? ((keys.currentCase === uc) ? 'lc' : 'uc') : keys.currentCase) : ''), 'kya', 25, 145, 13, 13],
         ['kym' + (keys.currentKb === 'kym' ? (keys.invertCase ? ((keys.currentCase === uc) ? 'lc' : 'uc') : keys.currentCase) : ''), 'kym', 41, 145, 13, 13],
@@ -1049,7 +1049,7 @@ var pnl = (function() {
                         keys.currentKb = 'kya';
                         keys.currentCase = 'uc';
                         keys.invertCase = false;
-                        keys.fixed[3][0] = 'ShiftFalse';
+                        keys.fixed[3][0] = 'Shiftfalse';
                         keys.fixed[4][0] = 'ucCaps';
                         drawKeys('kya', 'uc');
                         break;
@@ -1058,17 +1058,17 @@ var pnl = (function() {
                         keys.currentKb = 'kym';
                         keys.currentCase = 'uc';
                         keys.invertCase = false;
-                        keys.fixed[3][0] = 'ShiftFalse';
+                        keys.fixed[3][0] = 'Shiftfalse';
                         keys.fixed[4][0] = 'ucCaps';
                         drawKeys('kym', 'uc');
                         break;
 
                     case 'kyk':
-                        /*
+                        /* kyk keyboard not implemented yet (will be soon, though!)
                         keys.currentKb = 'kyk';
                         keys.currentCase = 'uc';
                         keys.invertCase = false;
-                        keys.fixed[3][0] = 'ShiftFalse';
+                        keys.fixed[3][0] = 'Shiftfalse';
                         keys.fixed[4][0] = 'ucCaps';
                         drawKeys('kyk', keys.currentCase);
                         */
