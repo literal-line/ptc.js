@@ -17,6 +17,7 @@ body {
     image-rendering: pixelated;
     image-rendering: -moz-crisp-edges;
     font-family: 'ptc';
+    margin: 0;
 }
 
 p {
@@ -33,7 +34,10 @@ a {
     position: relative;
     height: 384px;
     width: 256px;
-    margin: auto;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 0;
+    background-color: #000000;
     border: 1px solid #888888;
     zoom: 200%;
     touch-action: manipulation;
