@@ -643,7 +643,6 @@ var pnl = (function() {
 
         cacheDiv = fId('imageCache');
         images = keys.kya['uc'].concat(keys.kya['lc'], keys.kym['uc'], keys.kym['lc'], keys.kyk['uc']);
-        console.log(images);
         images.forEach(function(cur) {
             var image = document.createElement('img');
             image.src = keyDir + cur[0] + '.png';
