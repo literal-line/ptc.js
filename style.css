@@ -30,6 +30,12 @@ a {
 
 
 
+#imageCache {
+    display: none;
+}
+
+
+
 #ptc {
     position: relative;
     height: 384px;

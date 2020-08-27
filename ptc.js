@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////
 //ptc.js """"""interpreter""""""" by Literal Line//
 //             _____________________             //
-//             Build August 25, 2020             //
+//             Build August 26, 2020             //
 ///////////////////////////////////////////////////
 
 
@@ -303,7 +303,9 @@ var runMode = (function() {
             consoleData.chrTable.text[y] = '                                ';
         },
 
-        getDataObject: consoleData,
+        getDataObject: function() {
+            return consoleData;
+        },
 
         printChrIDs: function() {
             this.print(' ');
@@ -456,7 +458,7 @@ var inputMode = (function() {
         currentColor: 0
     };
     inputData.update = function() {
-        var consoleData = runMode.console.getDataObject;
+        var consoleData = runMode.console.getDataObject();
         inputData.cursorPos.y = consoleData.pos.y;
         inputData.currentColor = consoleData.currentColor;
     };
@@ -491,9 +493,9 @@ var inputMode = (function() {
 
             // draw text to text canvas
             textCtx.font = '48pt ptc';
-            var consoleData = runMode.console.getDataObject;
+            var consoleData = runMode.console.getDataObject();
             for (var i = 0; i <= 31; i++) {
-                textCtx.fillStyle = consoleData.palette[parseInt(inputData.textInput.color.charAt(i), 16)];
+                textCtx.fillStyle = consoleData.currentColor;
                 textCtx.fillText(text[i], i * 32, y);
             }
         }
@@ -521,7 +523,7 @@ var inputMode = (function() {
             e.preventDefault();
 
             inputData.textInput.string = inputData.textInput.string.insertAt(inputData.cursorPos.x, key);
-            inputData.textInput.color = inputData.textInput.color.insertAt(inputData.cursorPos.x, runMode.console.getDataObject.palette.indexOf(inputData.currentColor));
+            inputData.textInput.color = inputData.textInput.color.insertAt(inputData.cursorPos.x, runMode.console.getDataObject().palette.indexOf(inputData.currentColor));
             inputData.textInput.string = inputData.textInput.string.slice(0, -1);
             inputData.textInput.color = inputData.textInput.color.slice(0, -1);
 
@@ -539,28 +541,32 @@ var inputMode = (function() {
         
         switch(key) {
             case 'Enter':
-                var input, consoleY;
+                var input, consoleData, consoleY;
                 input = inputData.textInput.string;
+                consoleData = runMode.console.getDataObject();
     
                 inputData.history.push(input);
     
                 try {
                     runMode.console.print(input);
                     var result = eval(input);
+                    runMode.console.locate(0, consoleData.pos.y);
     
                     if (input !== '                                ') { // print "OK" unless input field is empty
                         runMode.console.print('OK');
-                        runMode.console.clearLine(runMode.console.getDataObject.pos.y);
+                        runMode.console.clearLine(consoleData.pos.y);
                     }
                 } catch(err) {
                     runMode.console.print(err.message);
+                    runMode.console.print('OK');
+                    runMode.console.clearLine(consoleData.pos.y);
                     runMode.audio.beep(2);
                 }
-    
+
                 // get next console line and copy to input field
-                consoleY = runMode.console.getDataObject.pos.y;
-                inputData.textInput.string = runMode.console.getDataObject.chrTable.text[consoleY];
-                inputData.textInput.color = runMode.console.getDataObject.chrTable.color[consoleY];
+                consoleY = consoleData.pos.y;
+                inputData.textInput.string = consoleData.chrTable.text[consoleY];
+                inputData.textInput.color = consoleData.chrTable.color[consoleY];
                 runMode.console.clearLine(consoleY);
                 inputData.cursorPos.x = 0;
                 break;
@@ -586,6 +592,14 @@ var inputMode = (function() {
                     inputData.cursorPos.x++;
                 }
                 break;
+
+            case 'ArrowUp':
+                e.preventDefault();
+                break;
+
+            case 'ArrowDown':
+                e.preventDefault();
+                break;
         }
         
         updateInput(1);
@@ -597,7 +611,10 @@ var inputMode = (function() {
 
     return {
 
-        getDataObject: inputData,
+        getDataObject: function() {
+            return inputData;
+        },
+
         isEnabled: isEnabled,
         
         init: function() {
@@ -616,6 +633,24 @@ var pnl = (function() {
     var div = fId('pnlScreen');
     var kbDiv = fId('kbScreen');
     var btnDiv = fId('btnScreen');
+
+    var keyDir = './assets/pnl/keys/';
+    var btnDir = './assets/pnl/buttons/';
+
+
+    var imageCache = function() {
+        var cacheDiv, images;
+
+        cacheDiv = fId('imageCache');
+        images = keys.kya['uc'].concat(keys.kya['lc'], keys.kym['uc'], keys.kym['lc'], keys.kyk['uc']);
+        console.log(images);
+        images.forEach(function(cur) {
+            var image = document.createElement('img');
+            image.src = keyDir + cur[0] + '.png';
+            cacheDiv.appendChild(image);
+        });
+    };
+
 
     // Keyboard data
     var keys = {
@@ -678,7 +713,7 @@ var pnl = (function() {
                 ['percent', '%', 209, 121],
                 ['SPACE', ' ', 81, 145, 109, 13]
             ],
-            lc : [
+            lc: [
                 ['NONE', 'NONE', 25, 49],
                 ['NONE', 'NONE', 41, 49],
                 ['hash', '#', 57, 49],
@@ -739,7 +774,7 @@ var pnl = (function() {
         },
         kym: {
             uc: [
-                ['heart', '', 25, 49], // image name, keypress id, x from left, y from top
+                ['heart', '', 25, 49],
                 ['diamondfilled', '', 41, 49],
                 ['spade', '', 57, 49],
                 ['club', '', 73, 49],
@@ -796,7 +831,7 @@ var pnl = (function() {
                 ['triangleright4', '', 209, 121],
                 ['SPACE', ' ', 81, 145, 109, 13]
             ],
-            lc : [
+            lc: [
                 ['NONE', 'NONE', 25, 49],
                 ['diamondoutline', '', 41, 49],
                 ['NONE', 'NONE', 57, 49],
@@ -855,6 +890,67 @@ var pnl = (function() {
                 ['SPACE', ' ', 81, 145, 109, 13]
             ]
         },
+        kyk: {
+            uc: [
+                ['kanaucA', 'ア', 25, 49], // image name, keypress id, x from left, y from top
+                ['kanaucI', 'イ', 41, 49],
+                ['kanaucU', 'ウ', 57, 49],
+                ['kanaucE', 'エ', 73, 49],
+                ['kanaucO', 'オ', 89, 49],
+                ['kanaucNa', 'ナ', 105, 49],
+                ['kanaucNi', 'ニ', 121, 49],
+                ['kanaucNu', 'ヌ', 137, 49],
+                ['kanaucNe', 'ネ', 153, 49],
+                ['kanaucNo', 'ノ', 169, 49],
+                ['kanaucHyphen', '-', 185, 49],
+                ['kanaucPlus', '+', 201, 49],
+                ['kanaucEquals', '=', 217, 49],
+                ['kanaucFulltilde', '〜', 1, 73],
+                ['kanaucPoint', '・', 17, 73],
+                ['kanaucKa', 'カ', 33, 73],
+                ['kanaucKi', 'キ', 49, 73],
+                ['kanaucKu', 'ク', 65, 73],
+                ['kanaucKe', 'ケ', 81, 73],
+                ['kanaucKo', 'コ', 97, 73],
+                ['kanaucHa', 'ハ', 113, 73],
+                ['kanaucHi', 'ヒ', 129, 73],
+                ['kanaucFu', 'フ', 145, 73],
+                ['kanaucHe', 'ヘ', 161, 73],
+                ['kanaucHo', 'ホ', 177, 73],
+                ['kanaucObracket', '「', 193, 73],
+                ['kanaucCbracket', '」', 209, 73],
+                ['kanaucN', 'ン', 225, 73],
+                ['kanaucPeriod', '。', 241, 73],
+                ['kanaucSa', 'サ', 25, 97],
+                ['kanaucShi', 'シ', 41, 97],
+                ['kanaucSu', 'ス', 57, 97],
+                ['kanaucSe', 'セ', 73, 97],
+                ['kanaucSo', 'ソ', 89, 97],
+                ['kanaucMa', 'マ', 105, 97],
+                ['kanaucMi', 'ミ', 121, 97],
+                ['kanaucMu', 'ム', 137, 97],
+                ['kanaucMe', 'メ', 153, 97],
+                ['kanaucMo', 'モ', 169, 97],
+                ['kanaucYa', 'ヤ', 185, 97],
+                ['kanaucYu', 'ユ', 201, 97],
+                ['kanaucYo', 'ヨ', 217, 97],
+                ['kanaucComma', '、', 233, 97],
+                ['kanaucTa', 'タ', 33, 121],
+                ['kanaucChi', 'チ', 49, 121],
+                ['kanaucTsu', 'ツ', 65, 121],
+                ['kanaucTe', 'テ', 81, 121],
+                ['kanaucTo', 'ト', 97, 121],
+                ['kanaucRa', 'ラ', 113, 121],
+                ['kanaucRi', 'リ', 129, 121],
+                ['kanaucRu', 'ル', 145, 121],
+                ['kanaucRe', 'レ', 161, 121],
+                ['kanaucRo', 'ロ', 177, 121],
+                ['kanaucWa', 'ワ', 193, 121],
+                ['kanaucWo', 'ヲ', 209, 121],
+                ['SPACE', ' ', 81, 145, 109, 13]
+            ],
+            lc: []
+        },
         currentKb: 'kya',
         currentCase: 'uc',
         invertCase: false
@@ -880,9 +976,6 @@ var pnl = (function() {
         ['ARROWRIGHT', 'ArrowRight', 233, 169, 21, 21],
         ['HELP', 'helpBtn', 1, 170, 30, 19],
     ];
-
-    var keyDir = './assets/pnl/keys/';
-    var btnDir = './assets/pnl/buttons/';
 
 
     // Display selected keyboard/case
@@ -1008,7 +1101,7 @@ var pnl = (function() {
     };
 
 
-    // a very nice PNL key/button handler :)
+    // A very nice PNL key/button handler :)
     div.addEventListener('mousedown', function(e) {
         var clickedElement = e.target;
         event.preventDefault();
@@ -1064,14 +1157,12 @@ var pnl = (function() {
                         break;
 
                     case 'kyk':
-                        /* kyk keyboard not implemented yet (will be soon, though!)
                         keys.currentKb = 'kyk';
                         keys.currentCase = 'uc';
                         keys.invertCase = false;
                         keys.fixed[3][0] = 'Shiftfalse';
                         keys.fixed[4][0] = 'ucCaps';
                         drawKeys('kyk', keys.currentCase);
-                        */
                         break;
 
                     default:
@@ -1109,6 +1200,8 @@ var pnl = (function() {
 
     return {
 
+        imageCache: imageCache,
+
         getKeys: function() {
             return keys;
         },
@@ -1118,6 +1211,7 @@ var pnl = (function() {
         switchCase: switchCase,
 
         init: function() {
+            pnl.imageCache();
             pnl.drawKeys(pnl.getKeys().currentKb, pnl.getKeys().currentCase);
             pnl.drawBtn();
         }
@@ -1192,12 +1286,13 @@ var inputHandler = (function() { // unused for now...
 
 
 setTimeout(function() {
+    pnl.init(); // default keyboard
+}, 250);
+
+setTimeout(function() {
     runMode.init(); // console welcome screen
     inputMode.init();
-    pnl.init(); // default keyboard
-}, 1000);
+}, 750)
 
 
-
-
-// 1200 lines! Wow! // STUPID CACHE STUPID CACHE!!!
+// 1300 lines! Wow! // STUPID CACHE STUPID CACHE!!!
