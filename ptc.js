@@ -1,9 +1,9 @@
 ///////////////////////////////////////////////////
 //ptc.js """"""interpreter""""""" by Literal Line//
 //             _____________________             //
-//             Build August 26, 2020             //
+//            Build September 7, 2020            //
 ///////////////////////////////////////////////////
-
+'use strict';
 
 
 
@@ -206,8 +206,16 @@ var runMode = (function() {
         consCtx.clearRect(0, 736, 1024, 32);
     };
 
-    var consoleCmds = {
+    // directory for sounds used with BEEP function
+    var beepDir = './assets/audio/beep/';
 
+
+    console.log('[PTC.js] runMode controller loaded');
+
+
+    return {
+
+        // console/input commands
         acls: function() {
             this.cls();
             // more stuff
@@ -245,9 +253,7 @@ var runMode = (function() {
 
             consCtx.font = '48pt ptc';
             consCtx.fillStyle = consoleData.currentColor;
-
-
-
+            
             // clear space for text, draw text, and add text to CHKCHR() table
             for (var i = 0; i < text.length; i++) {
 
@@ -303,7 +309,7 @@ var runMode = (function() {
             consoleData.chrTable.text[y] = '                                ';
         },
 
-        getDataObject: function() {
+        getConsoleDataObject: function() {
             return consoleData;
         },
 
@@ -346,20 +352,14 @@ var runMode = (function() {
             this.color(13);
             this.print('format.');
             this.color(0);
-        }
+        },
 
-    };
+        button: function() {
+            return inputHandler.getButtons();
+        },
+        
 
-    var bgCmds = {
-        // none rn
-    };
-
-    var spriteCmds = {
-        // none rn
-    };
-
-    var graphicCmds = {
-
+        // graphic commands
         gcls: function() {
             graphicCtx.clearRect(0, 0, 256, 192);
         },
@@ -371,12 +371,10 @@ var runMode = (function() {
             graphicCtx.moveTo(x1, y1);
             graphicCtx.lineTo(x2, y2);
             graphicCtx.stroke();
-        }
+        },
 
-    };
 
-    var audioCmds = {
-
+        // audio commands
         beep: function(id, vol) {
             id = id || 0;
             vol = (typeof vol === 'undefined') ? 0.5 : vol / 127 * 0.5;
@@ -387,33 +385,13 @@ var runMode = (function() {
                 sound.volume = vol;
                 sound.play();
             }
-        }
+        },
 
-    };
-
-    // directory for sounds used with BEEP function
-    var beepDir = './assets/audio/beep/';
-
-
-    console.log('[PTC.js] runMode controller loaded');
-
-
-    return { // all methods that can be used in run mode, categorized by their type
-
-        // raw commands for debug use
-        console: consoleCmds,
-
-        bg: bgCmds,
-
-        sprite: spriteCmds,
-
-        graphic: graphicCmds,
-
-        audio: audioCmds,
-
+        
+        // other
         init: function() {
-            this.console.welcome();
-            this.graphic.gcls();
+            this.welcome();
+            this.gcls();
         }
 
     };
@@ -458,7 +436,7 @@ var inputMode = (function() {
         currentColor: 0
     };
     inputData.update = function() {
-        var consoleData = runMode.console.getDataObject();
+        var consoleData = runMode.getConsoleDataObject();
         inputData.cursorPos.y = consoleData.pos.y;
         inputData.currentColor = consoleData.currentColor;
     };
@@ -493,7 +471,7 @@ var inputMode = (function() {
 
             // draw text to text canvas
             textCtx.font = '48pt ptc';
-            var consoleData = runMode.console.getDataObject();
+            var consoleData = runMode.getConsoleDataObject();
             for (var i = 0; i <= 31; i++) {
                 textCtx.fillStyle = consoleData.currentColor;
                 textCtx.fillText(text[i], i * 32, y);
@@ -507,23 +485,26 @@ var inputMode = (function() {
 
         return function(bool) {
             if (bool) {
+                clearInterval(inputInterval);
+                document.addEventListener('keypress', keypressEvent);
+                document.addEventListener('keydown', keydownEvent);
                 inputInterval = setInterval(updateInput, 500);
             } else {
-                console.log('bruh');
                 clearInterval(inputInterval);
+                document.removeEventListener('keypress', keypressEvent);
+                document.removeEventListener('keydown', keydownEvent);
+                cursorCtx.clearRect(0, 0, 1024, 768);
             }
         }
     })();
 
-    // detect typing
-    document.addEventListener('keypress', function(e) {
+    var keypressEvent = function(e) { // detect typing
+        e.preventDefault();
         var key = e.key;
 
         if (key !== 'Enter') {
-            e.preventDefault();
-
             inputData.textInput.string = inputData.textInput.string.insertAt(inputData.cursorPos.x, key);
-            inputData.textInput.color = inputData.textInput.color.insertAt(inputData.cursorPos.x, runMode.console.getDataObject().palette.indexOf(inputData.currentColor));
+            inputData.textInput.color = inputData.textInput.color.insertAt(inputData.cursorPos.x, runMode.getConsoleDataObject().palette.indexOf(inputData.currentColor));
             inputData.textInput.string = inputData.textInput.string.slice(0, -1);
             inputData.textInput.color = inputData.textInput.color.slice(0, -1);
 
@@ -533,47 +514,45 @@ var inputMode = (function() {
 
             updateInput(1);
         }
-    });
+    };
 
-    // detect special keys
-    document.addEventListener('keydown', function(e) {
+    var keydownEvent = function(e) { // detect special keys
+        e.preventDefault();
         var key = e.key;
-        
+
         switch(key) {
             case 'Enter':
                 var input, consoleData, consoleY;
                 input = inputData.textInput.string;
-                consoleData = runMode.console.getDataObject();
+                consoleData = runMode.getConsoleDataObject();
     
                 inputData.history.push(input);
     
                 try {
-                    runMode.console.print(input);
+                    runMode.print(input);
                     var result = eval(input);
-                    runMode.console.locate(0, consoleData.pos.y);
+                    runMode.locate(0, consoleData.pos.y);
     
                     if (input !== '                                ') { // print "OK" unless input field is empty
-                        runMode.console.print('OK');
-                        runMode.console.clearLine(consoleData.pos.y);
+                        runMode.print('OK');
+                        runMode.clearLine(consoleData.pos.y);
                     }
                 } catch(err) {
-                    runMode.console.print(err.message);
-                    runMode.console.print('OK');
-                    runMode.console.clearLine(consoleData.pos.y);
-                    runMode.audio.beep(2);
+                    runMode.print(err.message);
+                    runMode.print('OK');
+                    runMode.clearLine(consoleData.pos.y);
+                    runMode.beep(2);
                 }
 
                 // get next console line and copy to input field
                 consoleY = consoleData.pos.y;
                 inputData.textInput.string = consoleData.chrTable.text[consoleY];
                 inputData.textInput.color = consoleData.chrTable.color[consoleY];
-                runMode.console.clearLine(consoleY);
+                runMode.clearLine(consoleY);
                 inputData.cursorPos.x = 0;
                 break;
 
             case 'Backspace':
-                e.preventDefault();
-            
                 if (inputData.cursorPos.x > 0) {
                     inputData.textInput.string = inputData.textInput.string.deleteAt(inputData.cursorPos.x - 1) + ' ';
                     inputData.textInput.color = inputData.textInput.color.deleteAt(inputData.cursorPos.x - 1) + '0';
@@ -594,16 +573,16 @@ var inputMode = (function() {
                 break;
 
             case 'ArrowUp':
-                e.preventDefault();
+                //
                 break;
 
             case 'ArrowDown':
-                e.preventDefault();
+                //
                 break;
         }
         
         updateInput(1);
-    });
+    };
 
 
     console.log('[PTC.js] inputMode controller loaded');
@@ -642,7 +621,7 @@ var pnl = (function() {
         var cacheDiv, images;
 
         cacheDiv = fId('imageCache');
-        images = keys.kya['uc'].concat(keys.kya['lc'], keys.kym['uc'], keys.kym['lc'], keys.kyk['uc']);
+        images = keys.kya['uc'].concat(keys.kya['lc'], keys.kym['uc'], keys.kym['lc'], keys.kyk['uc'], keys.fixed);
         images.forEach(function(cur) {
             var image = document.createElement('img');
             image.src = keyDir + cur[0] + '.png';
@@ -968,7 +947,7 @@ var pnl = (function() {
     ];
 
     // PNL keys
-    buttons = [
+    var buttons = [
         ['ARROWUP', 'ArrowUp', 161, 169, 21, 21], // image name, keydown id, x from left, y from top, width, height
         ['ARROWDOWN', 'ArrowDown', 185, 169, 21, 21],
         ['ARROWLEFT', 'ArrowLeft', 209, 169, 21, 21],
@@ -1100,10 +1079,10 @@ var pnl = (function() {
     };
 
 
-    // A very nice PNL key/button handler :)
+    // A very poggers PNL key/button handler :)
     div.addEventListener('mousedown', function(e) {
-        var clickedElement = e.target;
         event.preventDefault();
+        var clickedElement = e.target;
 
         var keyEvent, keyId;
         switch(clickedElement.getAttribute('class')) {
@@ -1118,7 +1097,7 @@ var pnl = (function() {
                         shiftCase();
                     }
                 }
-                runMode.audio.beep(9);
+                runMode.beep(9);
                 break;
 
             case 'pnlKeyFixed':
@@ -1172,7 +1151,7 @@ var pnl = (function() {
                             shiftCase();
                         }
                 }
-                runMode.audio.beep(9);
+                runMode.beep(9);
                 break;
 
             case 'pnlBtn':
@@ -1223,55 +1202,69 @@ var pnl = (function() {
 
 var inputHandler = (function() { // unused for now...
 
+    window.onblur = function() { // clear pressed buttons/keys when away from page
+        pressedButtons = 0;
+    };
+
     var buttonCodes = {
-        1: 'ArrowUp',
-        2: 'ArrowDown',
-        4: 'ArrowLeft',
-        8: 'ArrowRight',
-        16: 'Z',
-        32: 'X',
-        64: 'A',
-        128: 'S',
-        256: 'Q',
-        512: 'W',
-        1024: 'Enter'
+        ArrowUp: [1, false],
+        ArrowDown: [2, false],
+        ArrowLeft: [4, false],
+        ArrowRight: [8, false],
+        Z: [16, false],
+        X: [32, false],
+        A: [64, false],
+        S: [128, false],
+        Q: [256, false],
+        W: [512, false],
+        Enter: [1024, false]
     };
     var pressedButtons = 0;
+
+    var checkPressedButtons = function() {
+        pressedButtons = 0;
+        for (var prop in buttonCodes) {
+            if (buttonCodes[prop][1]) pressedButtons += buttonCodes[prop][0];
+        }
+    };
 
 
     document.addEventListener('keydown', function(e) {
         var key = e.key.length < 2 ? e.key.toUpperCase() : e.key;
 
-        for (var i = 1; i <= 1024; i = i*2) {
-            if (buttonCodes[i] === key) {
-                pressedButtons += i;
-            }
+        if (buttonCodes[key]) {
+            buttonCodes[key][1] = true;
+            checkPressedButtons();
         }
     });
 
     document.addEventListener('keyup', function(e) {
         var key = e.key.length < 2 ? e.key.toUpperCase() : e.key;
 
-        for (var i = 1; i <= 1024; i = i*2) {
-            if (buttonCodes[i] === key) {
-                pressedButtons -= i;
-            }
+        if (buttonCodes[key]) {
+            buttonCodes[key][1] = false;
+            checkPressedButtons();
         }
     });
 
 
     return {
 
-        button: function() {
+        getButtons: function() {
             return pressedButtons;
         },
 
         mapButton: function(btnId, key) {
-            if (buttonCodes[btnId]) {
-                buttonCodes[btnId] = key;
-            } else {
-                return 'Button ID does not exist!';
+            key = key.length < 2 ? key.toUpperCase() : key;
+            if (buttonCodes[key]) return 'Key is already mapped to another button ID!';
+            for (var prop in buttonCodes) {
+                if (buttonCodes[prop][0] === btnId) {
+                    buttonCodes[key] = buttonCodes[prop];
+                    delete buttonCodes[prop];
+                    return 'Successfully mapped key "' + key + '" to button ID ' + btnId;
+                }
             }
+            return 'Button ID does not exist!';
         },
 
         getButtonMap: function() {
@@ -1294,4 +1287,4 @@ setTimeout(function() {
 }, 750)
 
 
-// 1300 lines! Wow! // STUPID CACHE STUPID CACHE!!!
+// 1300 lines. Of which 300 are arrays for the PNL keyboard :/

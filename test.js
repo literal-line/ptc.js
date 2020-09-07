@@ -1,21 +1,19 @@
 ///////////////////////////////////////
-//PTC.js build 8/15/2020 program test /
+// PTC.js build 9/7/2020 program test /
 ///////////////////////////////////////
 
+var testPrg = function() {
+    inputMode.isEnabled(false);
 
-var programTest = (function() {
+    runMode.cls();
+    runMode.color(11);
+    runMode.print('ptc.js BUTTON() test');
 
-    var c = 0;
-
-    var prg = function() {
-        runMode.console.cls();
-
-        runMode.console.print(c);
-
-        c++;
-        setTimeout(prg, 0);
+    var loopFunc = function() {
+        setInterval(function() {
+            runMode.print(runMode.button());
+        }, 1000 / 60);
     };
-    prg();
-    //var prgLoop = setInterval(prg, 1000 / 60);
 
-})();
+    setTimeout(loopFunc, 1000);
+};
