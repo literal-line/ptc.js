@@ -499,7 +499,6 @@ var inputMode = (function() {
     })();
 
     var keypressEvent = function(e) { // detect typing
-        e.preventDefault();
         var key = e.key;
 
         if (key !== 'Enter') {
