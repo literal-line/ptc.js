@@ -516,7 +516,6 @@ var inputMode = (function() {
     };
 
     var keydownEvent = function(e) { // detect special keys
-        e.preventDefault();
         var key = e.key;
 
         switch(key) {
@@ -552,6 +551,7 @@ var inputMode = (function() {
                 break;
 
             case 'Backspace':
+                e.preventDefault();
                 if (inputData.cursorPos.x > 0) {
                     inputData.textInput.string = inputData.textInput.string.deleteAt(inputData.cursorPos.x - 1) + ' ';
                     inputData.textInput.color = inputData.textInput.color.deleteAt(inputData.cursorPos.x - 1) + '0';
@@ -572,11 +572,11 @@ var inputMode = (function() {
                 break;
 
             case 'ArrowUp':
-                //
+                e.preventDefault();
                 break;
 
             case 'ArrowDown':
-                //
+                e.preventDefault();
                 break;
         }
         
