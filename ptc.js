@@ -637,7 +637,7 @@ var pnl = (function() {
         var cacheDiv, images;
 
         cacheDiv = fId('imageCache');
-        images = keys.kya['uc'].concat(keys.kya['lc'], keys.kym['uc'], keys.kym['lc'], keys.kyk['uc'], keys.fixed);
+        images = keys.kya['uc'].concat(keys.kya['lc'], keys.kym['uc'], keys.kym['lc'], keys.kyk['uc']);
         images.forEach(function(cur) {
             var image = document.createElement('img');
             image.src = keyDir + cur[0] + '.png';
@@ -1100,7 +1100,7 @@ var pnl = (function() {
         event.preventDefault();
         var clickedElement = e.target;
 
-        var keyEvent, keyId;
+        var keyId, keyEvent;
         switch(clickedElement.getAttribute('class')) {
             case 'pnlKey':
                 keyId = clickedElement.getAttribute('keyId');
@@ -1188,6 +1188,31 @@ var pnl = (function() {
         clickedElement.blur();
     });
 
+    document.addEventListener('mouseup', function(e) {
+        var keysDown = ['','','','','','','','','','','','','','','',
+        '','','','','','','','','','','','','','','','',
+        'Space','!','"','#','$','%','&','\'','(',')','*','+',',','-','.','/',
+        '0','1','2','3','4','5','6','7','8','9',':',';','<','=','>','?',
+        '@','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O',
+        'P','Q','R','S','T','U','V','W','X','Y','Z','[','¥',']','^','_',
+        '`','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o',
+        'p','q','r','s','t','u','v','w','x','y','z','{','|','}','~','\\',
+        '','','','','','','','','','','','','','','','',
+        '','','','','','','','','','','','','','','','',
+        '~','。','「','」','、','・','ヲ','ァ','ィ','ゥ','ェ','ォ','ャ','ュ','ョ','ッ',
+        'ー','ア','イ','ウ','エ','オ','カ','キ','ク','ケ','コ','サ','シ','ス','セ','ソ',
+        'タ','チ','ツ','テ','ト','ナ','ニ','ヌ','ネ','ノ','ハ','ヒ','フ','ヘ','ホ','マ',
+        'ミ','ム','メ','モ','ヤ','ユ','ヨ','ラ','リ','ル','レ','ロ','ワ','ン','゛','゜',
+        '','','','','','','','','','','','','','','','',
+        '','','','','','','','','','','','','','','','',
+        'Enter','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Tab','Shift','CapsLock'];
+
+        keysDown.forEach(function(cur) {
+            var keyEvent = new KeyboardEvent('keyup', {key: cur});
+            document.dispatchEvent(keyEvent);
+        });
+    });
+
 
     console.log('[PTC.js] PNL controller loaded');
 
@@ -1262,6 +1287,10 @@ var inputHandler = (function() { // unused for now...
             checkPressedButtons();
         }
     });
+
+    /*document.addEventListener('mouseup', function(e) {
+        pressedButtons = 0;
+    });*/
 
 
     return {
