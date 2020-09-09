@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////
 //ptc.js """"""interpreter""""""" by Literal Line//
 //             _____________________             //
-//            Build September 7, 2020            //
+//            Build September 8, 2020            //
 ///////////////////////////////////////////////////
 'use strict';
 
@@ -337,7 +337,7 @@ var runMode = (function() {
             this.color(0);
             this.print('PetitComputer ver2.2');
             this.print('SMILEBASIC 1048576 bytes free');
-            this.print('Build August 25, 2020');
+            this.print('Build September 8, 2020');
             this.print('');
             this.print('READY');
             this.print('');
@@ -433,7 +433,8 @@ var inputMode = (function() {
         },
         history: [], // later...
         historyCurrent : 0,
-        currentColor: 0
+        currentColor: 0,
+        enabled: true
     };
     inputData.update = function() {
         var consoleData = runMode.getConsoleDataObject();
@@ -457,15 +458,11 @@ var inputMode = (function() {
             cursorCtx.clearRect(0, 0, 1024, 768);
             textCtx.clearRect(0, 0, 1024, 768);
 
-            if (bool) {
-                visible = bool;
-            }
+            if (bool) visible = bool;
 
             // draw cursor to cursor canvas if visible variable === 1
             cursorCtx.fillStyle = '#FFFFFF';
-            if (visible === 1) {
-                cursorCtx.fillRect(x, y - 4, 28, -8);
-            }
+            if (visible === 1) cursorCtx.fillRect(x, y - 4, 28, -8);
 
             visible = -(visible);
 
@@ -485,15 +482,21 @@ var inputMode = (function() {
 
         return function(bool) {
             if (bool) {
+                inputData.enabled = true;
                 clearInterval(inputInterval);
+                document.removeEventListener('keydown', keydownEventNoInput);
                 document.addEventListener('keypress', keypressEvent);
                 document.addEventListener('keydown', keydownEvent);
                 inputInterval = setInterval(updateInput, 500);
+                updateInput(1);
             } else {
+                inputData.enabled = false;
                 clearInterval(inputInterval);
                 document.removeEventListener('keypress', keypressEvent);
                 document.removeEventListener('keydown', keydownEvent);
+                document.addEventListener('keydown', keydownEventNoInput);
                 cursorCtx.clearRect(0, 0, 1024, 768);
+                textCtx.clearRect(0, 0, 1024, 768);
             }
         }
     })();
@@ -552,7 +555,6 @@ var inputMode = (function() {
                 break;
 
             case 'Backspace':
-                e.preventDefault();
                 if (inputData.cursorPos.x > 0) {
                     inputData.textInput.string = inputData.textInput.string.deleteAt(inputData.cursorPos.x - 1) + ' ';
                     inputData.textInput.color = inputData.textInput.color.deleteAt(inputData.cursorPos.x - 1) + '0';
@@ -573,16 +575,30 @@ var inputMode = (function() {
                 break;
 
             case 'ArrowUp':
-                e.preventDefault();
+                //
                 break;
 
             case 'ArrowDown':
-                e.preventDefault();
+                //
                 break;
         }
         
-        updateInput(1);
+        if (inputData.enabled) updateInput(1);
     };
+
+    var keydownEventNoInput = function(e) {
+        if (e.key === 'Shift') {
+            clearInterval(prgInterval);
+            isEnabled(1);
+        }
+    };
+
+    // preventDefault()
+    document.addEventListener('keydown', function(e) {
+        var key = e.key;
+
+        if (key === 'Backspace' || key === 'ArrowUp' || key === 'ArrowDown') e.preventDefault();
+    });
 
 
     console.log('[PTC.js] inputMode controller loaded');

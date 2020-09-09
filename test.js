@@ -1,7 +1,8 @@
 ///////////////////////////////////////
-// PTC.js build 9/7/2020 program test /
+// PTC.js build 9/8/2020 program test /
 ///////////////////////////////////////
 
+var prgInterval;
 var testPrg = function() {
     inputMode.isEnabled(false);
 
@@ -10,7 +11,7 @@ var testPrg = function() {
     runMode.print('ptc.js BUTTON() test');
 
     var loopFunc = function() {
-        setInterval(function() {
+        prgInterval = setInterval(function() {
             runMode.print(runMode.button());
         }, 1000 / 60);
     };
