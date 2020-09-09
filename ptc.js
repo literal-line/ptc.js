@@ -1288,11 +1288,10 @@ var inputHandler = (function() { // unused for now...
         }
     });
 
-    /*document.addEventListener('mouseup', function(e) {
-        pressedButtons = 0;
-    });*/
 
+    console.log('[PTC.js] inputHandler loaded');
 
+    
     return {
 
         getButtons: function() {
