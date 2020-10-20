@@ -1,4 +1,5 @@
-# PTC.js
+[logo](https://github.com/literal-line/ptc.js/blob/master/favicon.ico)
+
 
 
 In-development interpreter/port thingy for Petit Computer written in HTML5. The interpreter part hasn't been written yet because I'm very stupid.
